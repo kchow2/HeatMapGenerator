@@ -555,11 +555,6 @@ void ImageOptionsDialogWorker::onProgressUpdate(int workDone, int totalWork){
 	wxQueueEvent(this->handler, threadEvent);
 }
 
-//called from sub worker thread
-void ImageOptionsDialogWorker::onThreadProgressUpdate(int threadId, int workDone, int totalWork){
-
-}
-
 ImageOptionsDialogWorker::~ImageOptionsDialogWorker()
 {
 	wxCriticalSectionLocker enter(this->handler->imageGeneratorWorkerCS);
