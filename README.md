@@ -1,3 +1,0 @@
-# HeatMapGenerator
-
-Generate pretty pictures...
