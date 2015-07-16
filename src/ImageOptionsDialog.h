@@ -2,7 +2,6 @@
 #include <wx/wx.h>
 #include <vector>
 #include "ImageGenerator.h"
-#include "InvertedHeatMapColourProvider.h"
 #include "wxImagePanel.h"
 
 struct ImageOptions;
