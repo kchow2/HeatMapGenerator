@@ -24,8 +24,10 @@ wxBEGIN_EVENT_TABLE(ImageOptionsDialog, wxFrame)
 	EVT_BUTTON(ID::ID_RIGHT, ImageOptionsDialog::translateButtonEvent)
 	EVT_BUTTON(ID::ID_UP, ImageOptionsDialog::translateButtonEvent)
 	EVT_BUTTON(ID::ID_DOWN, ImageOptionsDialog::translateButtonEvent)
+	EVT_BUTTON(ID::ID_TEST_IMAGE, ImageOptionsDialog::testImageButtonEvent)
 	EVT_LISTBOX(ID::ID_FUNCTION_CHOOSER, ImageOptionsDialog::functionChooserEvent)
 	EVT_COMBOBOX(ID::ID_COLOUR_CHOOSER, ImageOptionsDialog::colourChooserEvent)
+	EVT_COMBOBOX(ID::ID_SSAA_CHOOSER, ImageOptionsDialog::ssaaChooserEvent)
 	EVT_TEXT(ID::ID_XMIN, ImageOptionsDialog::textEditEvent)
 	EVT_TEXT(ID::ID_XMAX, ImageOptionsDialog::textEditEvent)
 	EVT_TEXT(ID::ID_YMIN, ImageOptionsDialog::textEditEvent)
@@ -147,11 +149,24 @@ ImageOptionsDialog::ImageOptionsDialog(const wxString& title, const wxPoint& pos
 	xRes = new wxTextCtrl(this, ID::ID_XRES, xResStr, wxPoint(15, 320), wxSize(60, 20), wxTE_PROCESS_ENTER, wxTextValidator(wxFILTER_DIGITS));
 	yRes = new wxTextCtrl(this, ID::ID_YRES, yResStr, wxPoint(95, 320), wxSize(60, 20), wxTE_PROCESS_ENTER, wxTextValidator(wxFILTER_DIGITS));
 
+	//super-sampling options
+	wxStaticText *ssaaLabel = new wxStaticText(this, wxID_ANY, wxT("SSAA"), wxPoint(180, 300));
+	this->initSSAAOptions();
+	wxComboBox *ssaaOptions = new wxComboBox(this, ID::ID_SSAA_CHOOSER, wxT(""), wxPoint(180, 320), wxSize(130, 20));
+	for (unsigned int i = 0; i < this->ssaaOptions.size(); i++){
+		ssaaOptions->Append(this->ssaaOptionNames[i]);
+	}
+	this->ssaaLevel = 2;
+	ssaaOptions->SetSelection(1);
+
 	//Add the Save and Cancel buttons
 	okButton = new wxButton(this, ID::ID_OK, wxT("Save..."));
 	okButton->SetPosition(wxPoint(80, 370));
 	cancelButton = new wxButton(this, ID::ID_CANCEL, wxT("Cancel"));
 	cancelButton->SetPosition(wxPoint(180, 370));
+
+	//Test image
+	wxButton *testButton = new wxButton(this, ID::ID_TEST_IMAGE, wxT("TEST"), wxPoint(280, 370));
 
 	//status bar
 	CreateStatusBar(1);
@@ -162,6 +177,23 @@ ImageOptionsDialog::ImageOptionsDialog(const wxString& title, const wxPoint& pos
 	this->generatePreviewImage();
 	this->generateColourPreview();
 	this->Refresh();
+}
+
+void ImageOptionsDialog::initSSAAOptions(){
+	ssaaOptions.push_back(SSAA_OPTIONS::SSAA_NONE);
+	ssaaOptions.push_back(SSAA_OPTIONS::SSAA_2X);
+	ssaaOptions.push_back(SSAA_OPTIONS::SSAA_4X);
+	ssaaOptions.push_back(SSAA_OPTIONS::SSAA_8X);
+
+	ssaaOptionNames.push_back("None");
+	ssaaOptionNames.push_back("2X");
+	ssaaOptionNames.push_back("4X");
+	ssaaOptionNames.push_back("8X");
+
+	ssaaLevels.push_back(1);
+	ssaaLevels.push_back(2);
+	ssaaLevels.push_back(4);
+	ssaaLevels.push_back(8);
 }
 
 //Save button event handler. Opens a save dialog which prompts the user to export the image as png.
@@ -210,6 +242,7 @@ void ImageOptionsDialog::okButtonEvent(wxCommandEvent& event){
 	imageOptions.outputFilename = saveFileDialog.GetPath();
 	imageOptions.heatMapFunc = this->heatMapFunc;
 	imageOptions.colourProvider = this->colourProvider;
+	imageOptions.ssaaLevel = this->ssaaLevel;
 	imageOptions.invertColours = this->invertColours;
 	imageOptions.xMin = xMinVal;
 	imageOptions.xMax = xMaxVal;
@@ -290,6 +323,19 @@ void ImageOptionsDialog::zoomButtonEvent(wxCommandEvent& event){
 	this->Refresh();
 }
 
+//sets the preview image to Mandelbrot at some preset coords so we can compare the image quality between changes to rendering techniques
+void ImageOptionsDialog::testImageButtonEvent(wxCommandEvent& event){
+	xMin->SetValue(wxString::FromCDouble(-0.0355469));
+	xMax->SetValue(wxString::FromCDouble(-0.0160157));
+	yMin->SetValue(wxString::FromCDouble(-0.783203));
+	yMax->SetValue(wxString::FromCDouble(-0.763672));
+	this->heatMapFunc = HeatMapFunc_MANDELBROT;
+
+	//generate the preview image and redraw the screen
+	this->generatePreviewImage();
+	this->Refresh();
+}
+
 //resets the perspective back to the default of ((-10,10),(-10,10))
 void ImageOptionsDialog::resetPerspectiveButtonEvent(wxCommandEvent& event){
 	xMin->SetValue(wxString::FromCDouble(-10.0));
@@ -341,6 +387,7 @@ void ImageOptionsDialog::generatePreviewImage(){
 	imageGenerator.setColourProvider(this->colourProvider);
 	imageGenerator.setInvertColours(this->invertColours);
 	imageGenerator.setFunction(heatMapFunc, xMinVal, xMaxVal, yMinVal, yMaxVal);
+	imageGenerator.setSSAALevel(this->ssaaLevel);
 	
 	//overwrite the image data with the new generated image.
 	imageGenerator.generateImage(&this->previewImage);	//generateImage() preserves the size of the input image.
@@ -354,6 +401,7 @@ void ImageOptionsDialog::generateColourPreview(){
 	imageGenerator.setColourProvider(this->colourProvider);
 	imageGenerator.setInvertColours(this->invertColours);
 	imageGenerator.setFunction(HeatMapFunc_GRADIENT, -10.0, 10.0, -10.0, 10.0);
+	imageGenerator.setSSAALevel(2);
 	
 	//overwrite the image data with the new generated image.
 	imageGenerator.generateImage(&this->colourPreview);	//generateImage() preserves the size of the input image.
@@ -374,7 +422,7 @@ void ImageOptionsDialog::functionChooserEvent(wxCommandEvent& event){
 //Event for the colour chooser allowing the user to choose the heat function
 void ImageOptionsDialog::colourChooserEvent(wxCommandEvent& event){
 	int selection = event.GetSelection();
-	if (selection >= 0 && selection < (int)heatFunctions.size()){
+	if (selection >= 0 && selection < (int)colourProviders.size()){
 		this->colourProvider = colourProviders[selection];
 	}
 
@@ -382,6 +430,17 @@ void ImageOptionsDialog::colourChooserEvent(wxCommandEvent& event){
 	this->generateColourPreview();
 	this->Refresh();
 }
+
+void ImageOptionsDialog::ssaaChooserEvent(wxCommandEvent& event){
+	int selection = event.GetSelection();
+	if (selection >= 0 && selection < (int)ssaaLevels.size()){
+		this->ssaaLevel = ssaaLevels[selection];
+	}
+
+	this->generatePreviewImage();
+	this->Refresh();
+}
+
 
 //Inverts the colour palette. The heatmap colour provider will be given 1-heatVal instead of heatVal for heatmap generation
 void ImageOptionsDialog::invertImageCheckboxEvent(wxCommandEvent& event){
@@ -534,6 +593,7 @@ bool ImageOptionsDialogWorker::generateImage(){
 	imageGenerator.setColourProvider(imageOptions.colourProvider);
 	imageGenerator.setInvertColours(imageOptions.invertColours);
 	imageGenerator.setFunction(imageOptions.heatMapFunc, imageOptions.xMin, imageOptions.xMax, imageOptions.yMin, imageOptions.yMax);
+	imageGenerator.setSSAALevel(imageOptions.ssaaLevel);
 	imageGenerator.setProgressListener(this);
 
 	//generate the final image

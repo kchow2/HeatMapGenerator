@@ -13,13 +13,16 @@ public:
 	ImageOptionsDialog(const wxString& title, const wxPoint& pos);
 	//~ImageOptionsDialog(void);
 private:
+	void initSSAAOptions();
     void okButtonEvent(wxCommandEvent& event);
 	void cancelButtonEvent(wxCommandEvent& event);
 	void zoomButtonEvent(wxCommandEvent& event);
 	void resetPerspectiveButtonEvent(wxCommandEvent& event);
 	void translateButtonEvent(wxCommandEvent& event);
+	void testImageButtonEvent(wxCommandEvent& event);
 	void functionChooserEvent(wxCommandEvent& event);
 	void colourChooserEvent(wxCommandEvent& event);
+	void ssaaChooserEvent(wxCommandEvent& event);
 	void textEditEvent(wxCommandEvent& event);
 	void invertImageCheckboxEvent(wxCommandEvent& event);
 	void addHeatFunc(HeatMapFunc f, wxString name);
@@ -50,19 +53,31 @@ private:
 		ID_ZOOM_OUT,
 		ID_RESET_PERSPECTIVE,
 		ID_INVERT_IMAGE,
-		ID_START_THREAD,
+		ID_SSAA_CHOOSER,
 		ID_LEFT,
 		ID_RIGHT,
 		ID_UP,
 		ID_DOWN,
+		ID_TEST_IMAGE,
 		ID_THREAD_UPDATE,
-		ID_THREAD_COMPLETE,
+		ID_THREAD_COMPLETE,	
+	};
+
+	enum SSAA_OPTIONS{
+		SSAA_NONE=1,
+		SSAA_2X,
+		SSAA_4X,
+		SSAA_8X,
+		SSAA_16X,
 	};
 
 	std::vector<wxString> heatFunctionNames;
 	std::vector<HeatMapFunc> heatFunctions;
 	std::vector<wxString> colourProviderNames;
 	std::vector<HeatMapColourProvider*> colourProviders;
+	std::vector<wxString> ssaaOptionNames;
+	std::vector<SSAA_OPTIONS> ssaaOptions;
+	std::vector<int> ssaaLevels;
 
 	static const double ZOOM_IN_FACTOR;
 	static const double ZOOM_OUT_FACTOR;
@@ -94,6 +109,7 @@ private:
 	HeatMapColourProvider *colourProvider;
 
 	bool invertColours;
+	int ssaaLevel;
 
 	//our worker thread to generate the output images
 	ImageOptionsDialogWorker *imageGeneratorWorker;
