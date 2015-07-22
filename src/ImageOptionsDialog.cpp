@@ -5,7 +5,6 @@
 #include <vector>
 #include <wx/valnum.h>
 #include <wx/filedlg.h>
-#include <wx/wfstream.h>
 
 //how much the preview image zooms in/out when the zoom controls are pressed.
 const double ImageOptionsDialog::ZOOM_IN_FACTOR = 0.5;
@@ -33,8 +32,10 @@ wxBEGIN_EVENT_TABLE(ImageOptionsDialog, wxFrame)
 	EVT_TEXT(ID::ID_YMIN, ImageOptionsDialog::textEditEvent)
 	EVT_TEXT(ID::ID_YMAX, ImageOptionsDialog::textEditEvent)
 	EVT_CHECKBOX(ID::ID_INVERT_IMAGE, ImageOptionsDialog::invertImageCheckboxEvent)
-	EVT_THREAD(ID::ID_THREAD_UPDATE, ImageOptionsDialog::OnThreadUpdate)
-	EVT_THREAD(ID::ID_THREAD_COMPLETE, ImageOptionsDialog::OnThreadCompletion)
+	EVT_THREAD(ID::ID_THREAD_UPDATE, ImageOptionsDialog::onThreadUpdate)
+	EVT_THREAD(ID::ID_THREAD_COMPLETE, ImageOptionsDialog::onThreadCompletion)
+	EVT_THREAD(ID::ID_THREAD_GENERATION_FINISHED, ImageOptionsDialog::onThreadGenerationFinished)
+	EVT_CLOSE(ImageOptionsDialog::onClose)
 wxEND_EVENT_TABLE()
 
 ImageOptionsDialog::ImageOptionsDialog(const wxString& title, const wxPoint& pos) 
@@ -61,7 +62,7 @@ ImageOptionsDialog::ImageOptionsDialog(const wxString& title, const wxPoint& pos
 	addHeatFunc(HeatMapFunc_RAND, "Noise");
 	addHeatFunc(HeatMapFunc_SIN__SIN_COS, "sin(sin(x+cos(y))");
 	addHeatFunc(HeatMapFunc_SIN_X2_Y2, "sin(x^2+y^2)");
-	addHeatFunc(HeatMapFunc_X_PLUS_Y, "abs(x+y)");
+	addHeatFunc(HeatMapFunc_X_PLUS_Y, "abs(x)+abs(y)");
 	addHeatFunc(HeatMapFunc_HEART1, "Heart1");
 	addHeatFunc(HeatMapFunc_HEART2, "Heart2");
 	addHeatFunc(HeatMapFunc_CHECKERBOARD, "Checkerboard");
@@ -164,6 +165,8 @@ ImageOptionsDialog::ImageOptionsDialog(const wxString& title, const wxPoint& pos
 	okButton->SetPosition(wxPoint(80, 370));
 	cancelButton = new wxButton(this, ID::ID_CANCEL, wxT("Cancel"));
 	cancelButton->SetPosition(wxPoint(180, 370));
+	//this->cancelButton->Hide();
+	this->cancelButton->Disable();	//cancel button is only enabled while saving the image
 
 	//Test image
 	wxButton *testButton = new wxButton(this, ID::ID_TEST_IMAGE, wxT("TEST"), wxPoint(280, 370));
@@ -171,7 +174,9 @@ ImageOptionsDialog::ImageOptionsDialog(const wxString& title, const wxPoint& pos
 	//status bar
 	CreateStatusBar(1);
 
-	this->imageGeneratorWorker = 0;
+	this->shouldQuit = false;
+
+	this->imageGeneratorThreadController = 0;
 	this->heatMapFunc = HeatMapFunc_SinXY;
 	this->colourProvider = colourProviders[0];
 	this->generatePreviewImage();
@@ -250,7 +255,7 @@ void ImageOptionsDialog::okButtonEvent(wxCommandEvent& event){
 	imageOptions.yMax = yMaxVal;
 	imageOptions.xRes = imageWidthPx;
 	imageOptions.yRes = imageHeightPx;
-	this->startImageGeneratorWorker(imageOptions);
+	this->startImageGeneratorThreadController(imageOptions);
 }
 
 //generates a new default save filename for the user's output image. This is called if an image with that name already exists. 
@@ -268,7 +273,11 @@ wxString ImageOptionsDialog::generateNewDefaultFilename(wxString outputDir, wxSt
 }
 
 void ImageOptionsDialog::cancelButtonEvent(wxCommandEvent& event){
-	this->Close(false);
+	wxCriticalSectionLocker enter(this->imageGeneratorWorkerCS);
+	// the thread is being destroyed; make sure not to leave dangling pointers around
+	if (imageGeneratorThreadController != NULL)
+		this->imageGeneratorThreadController->Delete();
+	//this->Close(false);
 }
 
 //Event handler for zoom buttons. Zooms out by a percent of the current perspective size.
@@ -527,21 +536,30 @@ void ImageOptionsDialog::generateImage(wxImage& image, HeatMapFunc heatFunc, Hea
 	imageGenerator.generateImage(&image);	//generateImage() preserves the size of the input image.
 }
 
+//frees allocated objects to avoid mem leaks
+void ImageOptionsDialog::cleanup(){
+	for (unsigned int i = 0; i < this->colourProviders.size(); i++){
+		delete this->colourProviders[i];
+	}
+	colourProviders.clear();
+}
+
 ////////worker thread//////////
-void ImageOptionsDialog::startImageGeneratorWorker(ImageOptions imageOptions){
+void ImageOptionsDialog::startImageGeneratorThreadController(ImageOptions imageOptions){
 	wxCriticalSectionLocker enter(this->imageGeneratorWorkerCS);
 	//start the thread
-	if (this->imageGeneratorWorker == 0){
-		this->imageGeneratorWorker = new ImageOptionsDialogWorker(this);
+	if (this->imageGeneratorThreadController == 0){
+		this->imageGeneratorThreadController = new ImageGeneratorThreadController(this);
 
 		//copy the image generation parameters for the thread
-		this->imageGeneratorWorker->imageOptions = imageOptions;
+		this->imageGeneratorThreadController->imageOptions = imageOptions;
 
-		if (this->imageGeneratorWorker->Run() != wxTHREAD_NO_ERROR){
+		if (this->imageGeneratorThreadController->Run() != wxTHREAD_NO_ERROR){
 			wxMessageBox(wxT("There was an error creating the worker thread."));
 		}
 		else{
 			//thread was created ok. Disable the 'save' button until the thread has finished writing the image
+			this->cancelButton->Enable();
 			this->okButton->Disable();
 		}
 	}
@@ -550,75 +568,39 @@ void ImageOptionsDialog::startImageGeneratorWorker(ImageOptions imageOptions){
 	}
 }
 
-void ImageOptionsDialog::OnThreadCompletion(wxThreadEvent&){
+void ImageOptionsDialog::onThreadCompletion(wxThreadEvent&){
 	this->SetStatusText(wxT(""));
 	this->okButton->Enable();	//enable the save button again
+	this->cancelButton->Disable();
+
+	//if we were waiting for this thread to finish, quit now.
+	if (this->shouldQuit){
+		this->cleanup();
+		this->Destroy();
+	}
 }
-void ImageOptionsDialog::OnThreadUpdate(wxThreadEvent& threadEvent){
+void ImageOptionsDialog::onThreadUpdate(wxThreadEvent& threadEvent){
 	int progress = threadEvent.GetInt();
-	if (progress < 100){
-		wxString msg = wxString::Format("Generating image (%d%%)...", threadEvent.GetInt());
-		this->SetStatusText(msg);
-	}
+	wxString msg = wxString::Format("Generating image (%d%%)...", threadEvent.GetInt());
+	this->SetStatusText(msg);
+}
+void ImageOptionsDialog::onThreadGenerationFinished(wxThreadEvent& threadEvent){
+	this->SetStatusText(wxT("Saving image..."));	
+}
+
+void ImageOptionsDialog::onClose(wxCloseEvent& event){
+	this->shouldQuit = true;
+	
+	//Terminate the worker thread. If the worker thread is already stopped, we can immediately close.
+	//otherwise, we will need to wait until the worker finishes.
+	wxCriticalSectionLocker lock(this->imageGeneratorWorkerCS);
+	if (imageGeneratorThreadController != NULL){
+		this->imageGeneratorThreadController->Delete();
+	}	
 	else{
-		this->SetStatusText(wxT("Saving image..."));
+		this->cleanup();
+		this->Destroy();
 	}
-}
-
-//The ImageOptionsDialogWorker thread is passed the parameters through the imageOptions member by the main thread.
-wxThread::ExitCode ImageOptionsDialogWorker::Entry()
-{
-	this->generateImage();
-	// signal the event handler that this thread is going to be destroyed
-	wxQueueEvent(this->handler, new wxThreadEvent(wxEVT_THREAD, ImageOptionsDialog::ID::ID_THREAD_COMPLETE));
-	return (wxThread::ExitCode)0;     // success
-}
-
-bool ImageOptionsDialogWorker::generateImage(){
-	wxFileOutputStream outputStream(imageOptions.outputFilename);
-	if (!outputStream.IsOk()){
-		wxLogError("Cannot open file '%s'.", imageOptions.outputFilename);
-		return false;
-	}
-
-	//generate the image and write to file
-	ImageGenerator imageGenerator;
-	wxImage outputImage(imageOptions.xRes, imageOptions.yRes);
-	if (!outputImage.IsOk()){
-		wxMessageBox(wxT("Failed to create the image!"));
-		return false;
-	}
-
-	//set the colour function used with the heatmap
-	imageGenerator.setColourProvider(imageOptions.colourProvider);
-	imageGenerator.setInvertColours(imageOptions.invertColours);
-	imageGenerator.setFunction(imageOptions.heatMapFunc, imageOptions.xMin, imageOptions.xMax, imageOptions.yMin, imageOptions.yMax);
-	imageGenerator.setSSAALevel(imageOptions.ssaaLevel);
-	imageGenerator.setProgressListener(this);
-
-	//generate the final image
-	imageGenerator.generateImage(&outputImage);
-
-	bool res = outputImage.SaveFile(outputStream, wxBITMAP_TYPE_PNG);
-	if (!res){
-		wxMessageBox(wxT("There was a problem saving the image."), wxT("Error"), wxICON_ERROR);
-		return false;
-	}
-	return true;
-}
-
-//gets called from ImageGenerator while generating the image
-void ImageOptionsDialogWorker::onProgressUpdate(int workDone, int totalWork){
-	//send a progress update event to the main thread
-	wxThreadEvent *threadEvent = new wxThreadEvent(wxEVT_THREAD, ImageOptionsDialog::ID::ID_THREAD_UPDATE);
-	threadEvent->SetInt(workDone*100/totalWork);
-	wxQueueEvent(this->handler, threadEvent);
-}
-
-ImageOptionsDialogWorker::~ImageOptionsDialogWorker()
-{
-	wxCriticalSectionLocker enter(this->handler->imageGeneratorWorkerCS);
-	// the thread is being destroyed; make sure not to leave dangling pointers around
-	this->handler->imageGeneratorWorker = NULL;
+		
 }
 

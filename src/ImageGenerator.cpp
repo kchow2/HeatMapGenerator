@@ -44,7 +44,6 @@ void ImageGenerator::setProgressListener(ImageGeneratorProgressListener *listene
 }
 
 void ImageGenerator::generateImage(wxImage *image){
-	//TODO: if this is a very large image, do this in a worker thread so the UI doesn't lock up
 	//use the width and height of the input image.
 	int imageWidthPx = image->GetWidth();
 	int imageHeightPx = image->GetHeight();
@@ -95,7 +94,9 @@ void ImageGenerator::generateImage(wxImage *image){
 			image->SetRGB(wxRect(xPx, yPx, 1, 1), colour.r, colour.g, colour.b);
 		}
 		if (this->progressListener){
-			this->progressListener->onProgressUpdate(yPx+1, imageHeightPx);
+			bool shouldContinue = this->progressListener->onProgressUpdate(yPx+1, imageHeightPx);
+			if (!shouldContinue)
+				break;
 		}
 	}
 }

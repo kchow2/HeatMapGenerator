@@ -3,9 +3,10 @@
 #include <vector>
 #include "ImageGenerator.h"
 #include "wxImagePanel.h"
+#include "ImageGeneratorThreadController.h"
 
-struct ImageOptions;
-class ImageOptionsDialogWorker;
+//struct ImageOptions;
+class ImageGeneratorThreadController;
 
 class ImageOptionsDialog : public wxFrame
 {
@@ -33,9 +34,12 @@ private:
 	void generateColourPreview();
 	void generateImage(wxImage& image, HeatMapFunc heatFunc, HeatMapColourProvider &colourProvider, double xMin, double xMax, double yMin, double yMax, bool invertColours);
 	wxString generateNewDefaultFilename(wxString outputDir, wxString originalName);
-	void startImageGeneratorWorker(ImageOptions imageOptions);
-	void OnThreadCompletion(wxThreadEvent&);
-	void OnThreadUpdate(wxThreadEvent&);
+	void startImageGeneratorThreadController(ImageOptions imageOptions);
+	void onThreadCompletion(wxThreadEvent&);
+	void onThreadUpdate(wxThreadEvent&);
+	void onThreadGenerationFinished(wxThreadEvent& threadEvent);
+	void onClose(wxCloseEvent& event);
+	void cleanup();
 
 	enum ID
 	{
@@ -60,6 +64,7 @@ private:
 		ID_DOWN,
 		ID_TEST_IMAGE,
 		ID_THREAD_UPDATE,
+		ID_THREAD_GENERATION_FINISHED,
 		ID_THREAD_COMPLETE,	
 	};
 
@@ -111,34 +116,14 @@ private:
 	bool invertColours;
 	int ssaaLevel;
 
+	//used for worker thread. Flag that indicates whether the main window should close when the worker thread finishes.
+	bool shouldQuit;
+
 	//our worker thread to generate the output images
-	ImageOptionsDialogWorker *imageGeneratorWorker;
+	ImageGeneratorThreadController *imageGeneratorThreadController;
 	wxCriticalSection imageGeneratorWorkerCS;
-	friend class ImageOptionsDialogWorker;
+	friend class ImageGeneratorThreadController;
 
 	wxDECLARE_EVENT_TABLE();
-};
-
-class ImageOptionsDialogWorker : public wxThread, public ImageGeneratorProgressListener
-{
-public:
-	ImageOptionsDialogWorker(ImageOptionsDialog *handler)
-		: wxThread(wxTHREAD_DETACHED)
-	{
-		this->handler = handler;
-	}
-	bool generateImage();
-	bool generateImageMT();//Multithreaded generation - WIP
-	void onProgressUpdate(int workDone, int totalWork);
-	void onThreadProgressUpdate(int threadId, int workDone, int totalWork);
-	~ImageOptionsDialogWorker();
-
-	//image options
-	ImageOptions imageOptions;
-
-	std::vector<int> threadProgress;	//keeps track of worker thread progress
-protected:
-	virtual ExitCode Entry();
-	ImageOptionsDialog *handler;
 };
 

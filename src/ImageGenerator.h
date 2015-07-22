@@ -15,7 +15,7 @@ struct ImageOptions{
 
 class ImageGeneratorProgressListener{
 public:
-	virtual void onProgressUpdate(int workDone, int totalWork) = 0;
+	virtual bool onProgressUpdate(int workDone, int totalWork) = 0;
 };
 
 class ImageGenerator
