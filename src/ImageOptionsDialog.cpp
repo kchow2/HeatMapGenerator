@@ -40,7 +40,9 @@ wxEND_EVENT_TABLE()
 
 ImageOptionsDialog::ImageOptionsDialog(const wxString& title, const wxPoint& pos) 
 : wxFrame(NULL, wxID_ANY, title, pos, wxSize(720, 480)) {
-	//Note: don't call addChild() for the buttons if specifying the parent window in the constructor.
+	
+	//set the main icon
+	this->SetIcon(wxIcon("main_icon"));
 	
 	//populate the list of available heatmap functions we can use to generate the image
 	addHeatFunc(HeatMapFunc_SinXY, "sin(xy)");

@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.8)
 
 project(HeatMapGenerator)
 
-FILE(GLOB SRCS "*.cpp")
+FILE(GLOB SRCS "*.cpp" "*.rc")
 
 FILE(GLOB HEADERS "*.h")
  

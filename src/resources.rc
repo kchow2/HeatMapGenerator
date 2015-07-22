@@ -1,0 +1,2 @@
+#include <wx/msw/wx.rc>
+main_icon ICON "HeatMapGenerator.ico"
