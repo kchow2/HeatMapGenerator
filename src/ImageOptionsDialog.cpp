@@ -172,7 +172,7 @@ ImageOptionsDialog::ImageOptionsDialog(const wxString& title, const wxPoint& pos
 	this->cancelButton->Disable();	//cancel button is only enabled while saving the image
 
 	//Test image
-	wxButton *testButton = new wxButton(this, ID::ID_TEST_IMAGE, wxT("TEST"), wxPoint(280, 370));
+	//wxButton *testButton = new wxButton(this, ID::ID_TEST_IMAGE, wxT("TEST"), wxPoint(280, 370));
 
 	//status bar
 	CreateStatusBar(1);
