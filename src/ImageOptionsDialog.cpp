@@ -81,11 +81,12 @@ ImageOptionsDialog::ImageOptionsDialog(const wxString& title, const wxPoint& pos
 	//colour providers
 	addColourProvider(new HeatMapColourProvider(), wxT("Default"));
 	addColourProvider(new RoygbivColourProvider(), wxT("ROYGBIV"));
-	addColourProvider(new RoygbivBWColourProvider(), wxT("ROYGBIV+BW"));
+	addColourProvider(new RoygbivBWColourProvider(), wxT("BROYGBIVW"));
 	addColourProvider(new GrayscaleColourProvider(), wxT("Grayscale"));
 	addColourProvider(new PinkColourProvider(), wxT("Pink"));
-	addColourProvider(new LogColourProvider(), wxT("Default (Log)"));
-	addColourProvider(new RoygbivBWLogColourProvider(), wxT("ROYGBIV+BW (Log)"));
+	addColourProvider(new LogColourProvider(), wxT("Default (X^3)"));
+	addColourProvider(new RoygbivBWLogColourProvider(), wxT("BROYGBIVW (X^3)"));
+	addColourProvider(new GreenRedColourProvider(), wxT("Green-Yellow-Red"));
 	addColourProvider(new TestColourProvider(), wxT("Test"));
 
 	//initialize images for the preview image and the colour palette preview

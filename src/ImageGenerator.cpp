@@ -62,8 +62,6 @@ void ImageGenerator::generateImage(wxImage *image){
 	
 	HeatMapColourProvider::Colour colour, sampleColour;
 	int maxSamples = this->ssaaLevel;
-	//double xSamplingSpacing = xScale / maxSamples;
-	//double ySamplingSpacing = yScale / maxSamples;
 	
 	for(int yPx = 0; yPx < imageHeightPx; yPx++){
 		for(int xPx = 0; xPx < imageWidthPx; xPx++){
@@ -98,6 +96,46 @@ void ImageGenerator::generateImage(wxImage *image){
 			if (!shouldContinue)
 				break;
 		}
+	}
+}
+
+void ImageGenerator::generateImageRow(wxImage *image, int row){
+	int imageWidthPx = image->GetWidth();
+	int imageHeightPx = image->GetHeight();
+	int yPx = row;
+
+	double xScale = (xMax - xMin) / imageWidthPx;
+	double yScale = (yMax - yMin) / imageHeightPx;
+
+	HeatMapColourProvider::Colour colour, sampleColour;
+	int maxSamples = this->ssaaLevel;
+	
+	for (int xPx = 0; xPx < imageWidthPx; xPx++){
+		colour.r = 0;
+		colour.g = 0;
+		colour.b = 0;
+		for (int sample = 0; sample < maxSamples; sample++){	//supersampling
+
+			double x = xMin + xPx*xScale + xSampleCoords[sample] * xScale;
+			double y = yMin + yPx*yScale + ySampleCoords[sample] * yScale;
+
+			double heatVal = (*heatMapFunc)(x, y);
+			if (invertColours)
+				heatVal = 1.0 - heatVal;
+
+			sampleColour = colourProvider->getHeatMapColour(heatVal);
+			//accumulate the samples in colour
+			colour.r += sampleColour.r;
+			colour.g += sampleColour.g;
+			colour.b += sampleColour.b;
+
+		}
+
+		//average out all the samples to form the final colour
+		colour.r /= maxSamples;
+		colour.g /= maxSamples;
+		colour.b /= maxSamples;
+		image->SetRGB(wxRect(xPx, yPx, 1, 1), colour.r, colour.g, colour.b);
 	}
 }
 

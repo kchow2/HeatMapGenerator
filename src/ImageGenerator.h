@@ -28,11 +28,11 @@ public:
 	void setColourProvider(HeatMapColourProvider *colourProvider);
 	void setSSAALevel(int nSamplesPerPixel);
 	void generateImage(wxImage *image);
+	void generateImageRow(wxImage* image, int row);
 	void setProgressListener(ImageGeneratorProgressListener* listener);
 	virtual ~ImageGenerator(void);
 
 private:
-	void generateImageMT(wxImage *image, int startRow, int endRow);
 	double xMin, xMax, yMin, yMax;
 	bool invertColours;
 	int ssaaLevel;

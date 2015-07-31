@@ -55,6 +55,12 @@ public:
 	virtual HeatMapColourProvider::Colour getHeatMapColour(double heatValue);
 };
 
+class GreenRedColourProvider : public HeatMapColourProvider
+{
+public:
+	virtual HeatMapColourProvider::Colour getHeatMapColour(double heatValue);
+};
+
 class TestColourProvider : public HeatMapColourProvider
 {
 public:
