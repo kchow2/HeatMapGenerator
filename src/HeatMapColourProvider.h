@@ -17,6 +17,15 @@ public:
 	*	May add ability to change color palette in the future.
 	*/
 	virtual Colour getHeatMapColour(double heatValue);	
+
+
+protected:
+	/*
+	* Linearly interpolates the colour value for the input value from a provided array of colour values.
+	* Input value is a value in [0.0,1.0] and an array of colour values to be interpolated from and the size of the colour array.
+	* Output is the interpolated value.
+	*/
+	HeatMapColourProvider::Colour getInterpolatedColourValue(double value, const int *rValues, const int *gValues, const int *bValues, int colourArraySize);
 };
 
 class GrayscaleColourProvider : public HeatMapColourProvider
