@@ -87,6 +87,18 @@ ImageOptionsDialog::ImageOptionsDialog(const wxString& title, const wxPoint& pos
 	addColourProvider(new LogColourProvider(), wxT("Default (X^3)"));
 	addColourProvider(new RoygbivBWLogColourProvider(), wxT("BROYGBIVW (X^3)"));
 	addColourProvider(new GreenRedColourProvider(), wxT("Green-Yellow-Red"));
+	addColourProvider(new BlackBodyColourProvider(), wxT("BlackBody"));
+	addColourProvider(new BWColourProvider(), wxT("Black/White"));
+	addColourProvider(new IslandParadiseColourProvider(), wxT("Island Paradise"));
+	addColourProvider(new OceanColourProvider(), wxT("Ocean"));
+	addColourProvider(new FBColourProvider(), wxT("Facebook"));
+	addColourProvider(new GryffindorColourProvider(), wxT("Gryffindor"));
+	addColourProvider(new CedarColourProvider(), wxT("Cedar"));
+	addColourProvider(new PokeballColourProvider(), wxT("Pokeball"));
+	addColourProvider(new FireColourProvider(), wxT("Fire"));
+	addColourProvider(new BlueGoldColourProvider(), wxT("Blue-Gold"));
+	addColourProvider(new PinkGreenColourProvider(), wxT("Pink-Green"));
+	addColourProvider(new GoogleColourProvider(), wxT("Google"));
 	addColourProvider(new TestColourProvider(), wxT("Test"));
 
 	//initialize images for the preview image and the colour palette preview
@@ -168,7 +180,6 @@ ImageOptionsDialog::ImageOptionsDialog(const wxString& title, const wxPoint& pos
 	okButton->SetPosition(wxPoint(80, 370));
 	cancelButton = new wxButton(this, ID::ID_CANCEL, wxT("Cancel"));
 	cancelButton->SetPosition(wxPoint(180, 370));
-	//this->cancelButton->Hide();
 	this->cancelButton->Disable();	//cancel button is only enabled while saving the image
 
 	//Test image

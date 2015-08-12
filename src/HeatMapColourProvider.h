@@ -70,6 +70,78 @@ public:
 	virtual HeatMapColourProvider::Colour getHeatMapColour(double heatValue);
 };
 
+class BlackBodyColourProvider : public HeatMapColourProvider
+{
+public:
+	virtual HeatMapColourProvider::Colour getHeatMapColour(double heatValue);
+};
+
+class BWColourProvider : public HeatMapColourProvider
+{
+public:
+	virtual HeatMapColourProvider::Colour getHeatMapColour(double heatValue);
+};
+
+class IslandParadiseColourProvider : public HeatMapColourProvider
+{
+public:
+	virtual HeatMapColourProvider::Colour getHeatMapColour(double heatValue);
+};
+
+class OceanColourProvider : public HeatMapColourProvider
+{
+public:
+	virtual HeatMapColourProvider::Colour getHeatMapColour(double heatValue);
+};
+
+class FBColourProvider : public HeatMapColourProvider
+{
+public:
+	virtual HeatMapColourProvider::Colour getHeatMapColour(double heatValue);
+};
+
+class GryffindorColourProvider : public HeatMapColourProvider
+{
+public:
+	virtual HeatMapColourProvider::Colour getHeatMapColour(double heatValue);
+};
+
+class CedarColourProvider : public HeatMapColourProvider
+{
+public:
+	virtual HeatMapColourProvider::Colour getHeatMapColour(double heatValue);
+};
+
+class PokeballColourProvider : public HeatMapColourProvider
+{
+public:
+	virtual HeatMapColourProvider::Colour getHeatMapColour(double heatValue);
+};
+
+class FireColourProvider : public HeatMapColourProvider
+{
+public:
+	virtual HeatMapColourProvider::Colour getHeatMapColour(double heatValue);
+};
+
+class BlueGoldColourProvider : public HeatMapColourProvider
+{
+public:
+	virtual HeatMapColourProvider::Colour getHeatMapColour(double heatValue);
+};
+
+class PinkGreenColourProvider : public HeatMapColourProvider
+{
+public:
+	virtual HeatMapColourProvider::Colour getHeatMapColour(double heatValue);
+};
+
+class GoogleColourProvider : public HeatMapColourProvider
+{
+public:
+	virtual HeatMapColourProvider::Colour getHeatMapColour(double heatValue);
+};
+
 class TestColourProvider : public HeatMapColourProvider
 {
 public:
