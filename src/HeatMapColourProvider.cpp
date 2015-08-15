@@ -119,31 +119,6 @@ HeatMapColourProvider::Colour RoygbivBWColourProvider::getHeatMapColour(double h
 	return this->getInterpolatedColourValue(heatValue, rValues, gValues, bValues, nColours);
 }
 
-HeatMapColourProvider::Colour LogColourProvider::getHeatMapColour(double heatValue){
-	heatValue = std::max(0.0, std::min(heatValue, 1.0));	//clamp intensity to range [0.0, 1.0]
-	heatValue = heatValue*heatValue*heatValue;
-
-	const int nColours = 7;
-	const int rValues[] = { 0, 0, 0, 0, 255, 255, 255 };
-	const int gValues[] = { 0, 0, 255, 255, 255, 0, 255 };
-	const int bValues[] = { 0, 255, 255, 0, 0, 0, 255 };
-
-	return this->getInterpolatedColourValue(heatValue, rValues, gValues, bValues, nColours);
-}
-
-
-HeatMapColourProvider::Colour RoygbivBWLogColourProvider::getHeatMapColour(double heatValue){
-	//0.0-1.0    black-red-orange-yellow-green-cyan-blue-indigo-violet-white
-	heatValue = std::max(0.0, std::min(heatValue, 1.0));	//clamp intensity to range [0.0, 1.0]
-	heatValue = heatValue*heatValue*heatValue;
-
-	const int nColours = 9;
-	const int rValues[] = { 0x00, 0xFF, 0xFF, 0xFF, 0x00, 0x00, 0x00, 0x9F, 0xFF };
-	const int gValues[] = { 0x00, 0x00, 0x66, 0xFF, 0xFF, 0xFF, 0x00, 0x00, 0xFF };
-	const int bValues[] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0xFF, 0xFF, 0xFF, 0xFF };
-
-	return this->getInterpolatedColourValue(heatValue, rValues, gValues, bValues, nColours);
-}
 
 HeatMapColourProvider::Colour GreenRedColourProvider::getHeatMapColour(double heatValue){
 	//0.0-1.0    green-yellow-red
@@ -189,12 +164,6 @@ HeatMapColourProvider::Colour BlackBodyColourProvider::getHeatMapColour(double h
 	const int bValues[] = { 0x00, 0x00, 0x02, 0x11, 0x26, 0x40, 0x5E, 0x7D, 0x9E, 0xBE, 0xDD, 0xFB, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF };
 
 	return this->getInterpolatedColourValue(heatValue, rValues, gValues, bValues, nColours);
-}
-
-HeatMapColourProvider::Colour BWColourProvider::getHeatMapColour(double heatValue){
-	if (heatValue > 0.5)
-		return Colour(255, 255, 255);
-	return Colour(0, 0, 0);
 }
 
 HeatMapColourProvider::Colour IslandParadiseColourProvider::getHeatMapColour(double heatValue){

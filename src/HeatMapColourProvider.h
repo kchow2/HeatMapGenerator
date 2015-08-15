@@ -80,18 +80,6 @@ public:
 	virtual HeatMapColourProvider::Colour getHeatMapColour(double heatValue);
 };
 
-class LogColourProvider : public HeatMapColourProvider
-{
-public:
-	virtual HeatMapColourProvider::Colour getHeatMapColour(double heatValue);
-};
-
-class RoygbivBWLogColourProvider : public HeatMapColourProvider
-{
-public:
-	virtual HeatMapColourProvider::Colour getHeatMapColour(double heatValue);
-};
-
 class GreenRedColourProvider : public HeatMapColourProvider
 {
 public:
@@ -99,12 +87,6 @@ public:
 };
 
 class BlackBodyColourProvider : public HeatMapColourProvider
-{
-public:
-	virtual HeatMapColourProvider::Colour getHeatMapColour(double heatValue);
-};
-
-class BWColourProvider : public HeatMapColourProvider
 {
 public:
 	virtual HeatMapColourProvider::Colour getHeatMapColour(double heatValue);

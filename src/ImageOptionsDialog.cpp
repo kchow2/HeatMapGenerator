@@ -83,13 +83,10 @@ ImageOptionsDialog::ImageOptionsDialog(const wxString& title, const wxPoint& pos
 	addColourProvider(new HeatMapColourProvider(), wxT("Default"));
 	addColourProvider(new RoygbivColourProvider(), wxT("ROYGBIV"));
 	addColourProvider(new RoygbivBWColourProvider(), wxT("BROYGBIVW"));
-	addColourProvider(new GrayscaleColourProvider(), wxT("Grayscale"));
 	addColourProvider(new PinkColourProvider(), wxT("Pink"));
-	addColourProvider(new LogColourProvider(), wxT("Default (X^3)"));
-	addColourProvider(new RoygbivBWLogColourProvider(), wxT("BROYGBIVW (X^3)"));
 	addColourProvider(new GreenRedColourProvider(), wxT("Green-Yellow-Red"));
 	addColourProvider(new BlackBodyColourProvider(), wxT("BlackBody"));
-	addColourProvider(new BWColourProvider(), wxT("Black/White"));
+	addColourProvider(new GrayscaleColourProvider(), wxT("Grayscale"));
 	addColourProvider(new IslandParadiseColourProvider(), wxT("Island Paradise"));
 	addColourProvider(new OceanColourProvider(), wxT("Ocean"));
 	addColourProvider(new FBColourProvider(), wxT("Facebook"));
