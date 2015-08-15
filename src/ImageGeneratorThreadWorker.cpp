@@ -6,7 +6,7 @@ wxThread::ExitCode ImageGeneratorThreadWorker::Entry(){
 	ImageGenerator imageGenerator;
 
 	//set the colour function used with the heatmap
-	imageGenerator.setColourProvider(imageOptions.colourProvider);
+	imageGenerator.setColourProvider(imageOptions.colourProvider, imageOptions.colourInterpolationMode);
 	imageGenerator.setInvertColours(imageOptions.invertColours);
 	imageGenerator.setFunction(imageOptions.heatMapFunc, imageOptions.xMin, imageOptions.xMax, imageOptions.yMin, imageOptions.yMax);
 	imageGenerator.setSSAALevel(imageOptions.ssaaLevel);

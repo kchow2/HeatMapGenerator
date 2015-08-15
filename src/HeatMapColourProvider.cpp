@@ -1,8 +1,32 @@
 #include "HeatMapColourProvider.h"
 #include <algorithm>
 
+void HeatMapColourProvider::setInterpolationMode(COLOUR_INTERPOLATION_MODE mode){
+	this->interpolationMode = mode;
+}
+
 //helper func to interpolate values linearly from a colour array
 HeatMapColourProvider::Colour HeatMapColourProvider::getInterpolatedColourValue(double value, const int *rValues, const int *gValues, const int *bValues, int colourArraySize){
+	if (this->interpolationMode == COLOUR_INTERPOLATION_MODE::LINEAR){
+		//value = value;
+	}
+	else if (this->interpolationMode == COLOUR_INTERPOLATION_MODE::QUADRATIC){
+		value = value*value;
+	}
+	else if (this->interpolationMode == COLOUR_INTERPOLATION_MODE::CUBIC){
+		value = value*value*value;
+	}
+	else if (this->interpolationMode == COLOUR_INTERPOLATION_MODE::SQRT){
+		value = std::sqrt(value);
+	}
+	else if (this->interpolationMode == COLOUR_INTERPOLATION_MODE::CUBERT){
+		value = std::pow(value, 1.0 / 3.0);
+	}
+	else if (this->interpolationMode == COLOUR_INTERPOLATION_MODE::CLOSEST_MATCH){
+		return getClosestColourMatch(value, rValues, gValues, bValues, colourArraySize);
+	}
+		
+	
 	int scaledIntensity = (int)(value*(colourArraySize - 1) * 100);
 	int step = (int)(scaledIntensity / 100);	//the 'step' is which two values in the array we should be interpolating between
 	double stepDistance = (scaledIntensity - 100.0*step) / 100;	//the distance the value is from the step
@@ -11,6 +35,28 @@ HeatMapColourProvider::Colour HeatMapColourProvider::getInterpolatedColourValue(
 	int r = (int)((rValues[step + 1] - rValues[step])*stepDistance + rValues[step]);
 	int g = (int)((gValues[step + 1] - gValues[step])*stepDistance + gValues[step]);
 	int b = (int)((bValues[step + 1] - bValues[step])*stepDistance + bValues[step]);
+	return Colour(r, g, b);
+}
+
+//helper func to get closest colour match for given heat value
+HeatMapColourProvider::Colour HeatMapColourProvider::getClosestColourMatch(double value, const int *rValues, const int *gValues, const int *bValues, int colourArraySize){
+	int scaledIntensity = (int)(value*(colourArraySize - 1) * 100);
+	int step = (int)(scaledIntensity / 100);	//the 'step' is which two values in the array we should be interpolating between
+	double stepDistance = (scaledIntensity - 100.0*step) / 100;	//the distance the value is from the step
+
+	//return the closest colour to the point
+	int r, g, b;
+	if (stepDistance < 0.5){
+		r = rValues[step];
+		g = gValues[step];
+		b = bValues[step];
+	}
+	else{
+		r = rValues[step+1];
+		g = gValues[step+1];
+		b = bValues[step+1];
+	}
+
 	return Colour(r, g, b);
 }
 

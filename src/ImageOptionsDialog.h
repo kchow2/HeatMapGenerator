@@ -2,6 +2,7 @@
 #include <wx/wx.h>
 #include <vector>
 #include "ImageGenerator.h"
+#include "HeatMapColourProvider.h"
 #include "wxImagePanel.h"
 #include "ImageGeneratorThreadController.h"
 
@@ -14,6 +15,7 @@ public:
 	ImageOptionsDialog(const wxString& title, const wxPoint& pos);
 	//~ImageOptionsDialog(void);
 private:
+	void initInterpolationModes();
 	void initSSAAOptions();
     void okButtonEvent(wxCommandEvent& event);
 	void cancelButtonEvent(wxCommandEvent& event);
@@ -23,6 +25,7 @@ private:
 	void testImageButtonEvent(wxCommandEvent& event);
 	void functionChooserEvent(wxCommandEvent& event);
 	void colourChooserEvent(wxCommandEvent& event);
+	void interpolationModeChooserEvent(wxCommandEvent& event);
 	void ssaaChooserEvent(wxCommandEvent& event);
 	void textEditEvent(wxCommandEvent& event);
 	void invertImageCheckboxEvent(wxCommandEvent& event);
@@ -32,7 +35,7 @@ private:
 	void translateYPerspective(double factor);
 	void generatePreviewImage();
 	void generateColourPreview();
-	void generateImage(wxImage& image, HeatMapFunc heatFunc, HeatMapColourProvider &colourProvider, double xMin, double xMax, double yMin, double yMax, bool invertColours);
+	void generateImage(wxImage& image, HeatMapFunc heatFunc, HeatMapColourProvider &colourProvider, HeatMapColourProvider::COLOUR_INTERPOLATION_MODE interpolationMode, double xMin, double xMax, double yMin, double yMax, bool invertColours);
 	wxString generateNewDefaultFilename(wxString outputDir, wxString originalName);
 	void startImageGeneratorThreadController(ImageOptions imageOptions);
 	void onThreadCompletion(wxThreadEvent&);
@@ -47,6 +50,7 @@ private:
 		ID_CANCEL,
 		ID_FUNCTION_CHOOSER,
 		ID_COLOUR_CHOOSER,
+		ID_INTERPOLATION_MODE_CHOOSER,
 		ID_XMIN,
 		ID_XMAX,
 		ID_YMIN,
@@ -80,6 +84,8 @@ private:
 	std::vector<HeatMapFunc> heatFunctions;
 	std::vector<wxString> colourProviderNames;
 	std::vector<HeatMapColourProvider*> colourProviders;
+	std::vector<wxString> interpolationModeNames;
+	std::vector<HeatMapColourProvider::COLOUR_INTERPOLATION_MODE> interpolationModes;
 	std::vector<wxString> ssaaOptionNames;
 	std::vector<SSAA_OPTIONS> ssaaOptions;
 	std::vector<int> ssaaLevels;
@@ -115,6 +121,7 @@ private:
 
 	bool invertColours;
 	int ssaaLevel;
+	HeatMapColourProvider::COLOUR_INTERPOLATION_MODE colourInterpolationMode;
 
 	//used for worker thread. Flag that indicates whether the main window should close when the worker thread finishes.
 	bool shouldQuit;

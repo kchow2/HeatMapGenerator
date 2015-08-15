@@ -3,13 +3,34 @@
 class HeatMapColourProvider	//default colour provider
 {
 public:
+
+	enum COLOUR_INTERPOLATION_MODE{
+		LINEAR = 1,
+		QUADRATIC,
+		CUBIC,
+		SQRT,
+		CUBERT,
+		CLOSEST_MATCH
+	};
+
 	struct Colour{
 		int r,g,b;
 		Colour(): r(0), g(0), b(0) {};
 		Colour(int r, int g, int b) : r(r), g(g), b(b) {};
 	};
-	HeatMapColourProvider(void){}
+	HeatMapColourProvider(void){ interpolationMode = COLOUR_INTERPOLATION_MODE::LINEAR; }
 	virtual ~HeatMapColourProvider(void){}
+	
+	/*
+	Set the colour interpolation mode. Possible values are: {LINEAR,QUADRATIC,CUBIC,SQRT,CUBERT,CLOSEST_MATCH}.
+	LINEAR (Default) - The colours are evenly spaced out and the two closest colours to the point are used to do a linear interpolation.
+	QUADRATIC - The input is first squared, then linear interpolation is done using this value.
+	CUBIC - Input is cubed
+	SQRT - Input is square rooted
+	CUBERT - Input is cube rooted
+	CLOSEST_MATCH - No interpolation is done. The colour closest to the input value is chosen. This creates sharp discontinuities in the output.
+	*/
+	void setInterpolationMode(COLOUR_INTERPOLATION_MODE mode);
 	
 	/*
 	*	returns the RGB color value for the specified 'heat value'. The heat value can range from 0.0-1.0.
@@ -26,6 +47,13 @@ protected:
 	* Output is the interpolated value.
 	*/
 	HeatMapColourProvider::Colour getInterpolatedColourValue(double value, const int *rValues, const int *gValues, const int *bValues, int colourArraySize);
+
+	/*
+	* Gets the closest colour to the input value
+	*/
+	HeatMapColourProvider::Colour getClosestColourMatch(double value, const int *rValues, const int *gValues, const int *bValues, int colourArraySize);
+
+	COLOUR_INTERPOLATION_MODE interpolationMode;
 };
 
 class GrayscaleColourProvider : public HeatMapColourProvider

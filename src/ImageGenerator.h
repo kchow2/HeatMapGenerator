@@ -8,8 +8,10 @@ struct ImageOptions{
 	double xMin, xMax, yMin, yMax;
 	int xRes, yRes;
 	int ssaaLevel;
+
 	HeatMapFunc heatMapFunc;
 	HeatMapColourProvider *colourProvider;
+	HeatMapColourProvider::COLOUR_INTERPOLATION_MODE colourInterpolationMode;
 	bool invertColours;
 };
 
@@ -25,7 +27,7 @@ public:
 	ImageGenerator(void);
 	void setInvertColours(bool invertColours);
 	void setFunction(HeatMapFunc f, double xMin, double xMax, double yMin, double yMax);
-	void setColourProvider(HeatMapColourProvider *colourProvider);
+	void setColourProvider(HeatMapColourProvider *colourProvider, HeatMapColourProvider::COLOUR_INTERPOLATION_MODE interpolationMode);
 	void setSSAALevel(int nSamplesPerPixel);
 	void generateImage(wxImage *image);
 	void generateImageRow(wxImage* image, int row);

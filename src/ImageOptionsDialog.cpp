@@ -26,6 +26,7 @@ wxBEGIN_EVENT_TABLE(ImageOptionsDialog, wxFrame)
 	EVT_BUTTON(ID::ID_TEST_IMAGE, ImageOptionsDialog::testImageButtonEvent)
 	EVT_LISTBOX(ID::ID_FUNCTION_CHOOSER, ImageOptionsDialog::functionChooserEvent)
 	EVT_COMBOBOX(ID::ID_COLOUR_CHOOSER, ImageOptionsDialog::colourChooserEvent)
+	EVT_COMBOBOX(ID::ID_INTERPOLATION_MODE_CHOOSER, ImageOptionsDialog::interpolationModeChooserEvent)
 	EVT_COMBOBOX(ID::ID_SSAA_CHOOSER, ImageOptionsDialog::ssaaChooserEvent)
 	EVT_TEXT(ID::ID_XMIN, ImageOptionsDialog::textEditEvent)
 	EVT_TEXT(ID::ID_XMAX, ImageOptionsDialog::textEditEvent)
@@ -39,7 +40,7 @@ wxBEGIN_EVENT_TABLE(ImageOptionsDialog, wxFrame)
 wxEND_EVENT_TABLE()
 
 ImageOptionsDialog::ImageOptionsDialog(const wxString& title, const wxPoint& pos) 
-: wxFrame(NULL, wxID_ANY, title, pos, wxSize(720, 480)) {
+: wxFrame(NULL, wxID_ANY, title, pos, wxSize(720, 520)) {
 	
 	//set the main icon
 	this->SetIcon(wxIcon("main_icon"));
@@ -139,36 +140,46 @@ ImageOptionsDialog::ImageOptionsDialog(const wxString& title, const wxPoint& pos
 	rightButton = new wxButton(this, ID::ID_RIGHT, wxT(">"), wxPoint(530, 290));
 
 	//colour settings
-	colourGroupBox = new wxStaticBox(this, wxID_ANY, wxT(""), wxPoint(10, 150), wxSize(320, 100));
+	colourGroupBox = new wxStaticBox(this, wxID_ANY, wxT(""), wxPoint(10, 150), wxSize(320, 150));
 	colorSettingsLabel = new wxStaticText(this, wxID_ANY, wxT("Colors"), wxPoint(15, 160));
 	colourPreviewPanel = new wxImagePanel(this, wxID_ANY, wxPoint(15, 180), wxSize(305, 20), &colourPreview);
-	invertImageCheckBox = new wxCheckBox(this, ID::ID_INVERT_IMAGE, wxT("Invert Colours"), wxPoint(180, 220));
+	invertImageCheckBox = new wxCheckBox(this, ID::ID_INVERT_IMAGE, wxT("Invert"), wxPoint(200, 275));
 	invertColours = false;
 	colorLegendLabel_0 = new wxStaticText(this, wxID_ANY, wxT("0.0"), wxPoint(15, 200));
 	colorLegendLabel_1 = new wxStaticText(this, wxID_ANY, wxT("1.0"), wxPoint(305, 200));
 
 	//colour chooser
-	wxComboBox *colourChooser = new wxComboBox(this, ID::ID_COLOUR_CHOOSER, wxT(""), wxPoint(15, 220), wxSize(130, 25));
+	wxStaticText* colorChooserLabel = new wxStaticText(this, wxID_ANY, wxT("Palette"), wxPoint(15, 220));
+	wxComboBox *colourChooser = new wxComboBox(this, ID::ID_COLOUR_CHOOSER, wxT(""), wxPoint(15, 240), wxSize(130, 25));
 	for (unsigned int i = 0; i < this->colourProviderNames.size(); i++){
 		colourChooser->Append(this->colourProviderNames[i]);
 	}
 	colourChooser->SetSelection(0);
 
+	//interpolation types
+	wxStaticText* interpolationModeLabel = new wxStaticText(this, wxID_ANY, wxT("Interpolation"), wxPoint(180, 220));
+	wxComboBox *interpolationModeChooser = new wxComboBox(this, ID::ID_INTERPOLATION_MODE_CHOOSER, wxT(""), wxPoint(180, 240), wxSize(130, 25));
+	this->initInterpolationModes();
+	for (unsigned int i = 0; i < this->interpolationModes.size(); i++){
+		interpolationModeChooser->Append(this->interpolationModeNames[i]);
+	}
+	interpolationModeChooser->SetSelection(0);
+
 	//output settings
-	outputSettingsGroupBox = new wxStaticBox(this, wxID_ANY, wxT(""), wxPoint(10, 260), wxSize(320, 100));
-	outputSettingsLabel = new wxStaticText(this, wxID_ANY, wxT("Output Settings"), wxPoint(15, 270));
-	resolutionLabel = new wxStaticText(this, wxID_ANY, wxT("Resolution"), wxPoint(15, 300));
-	resolutionSeparator = new wxStaticText(this, wxID_ANY, wxT("x"), wxPoint(82, 320));
+	outputSettingsGroupBox = new wxStaticBox(this, wxID_ANY, wxT(""), wxPoint(10, 310), wxSize(320, 100));
+	outputSettingsLabel = new wxStaticText(this, wxID_ANY, wxT("Output Settings"), wxPoint(15, 320));
+	resolutionLabel = new wxStaticText(this, wxID_ANY, wxT("Resolution"), wxPoint(15, 350));
+	resolutionSeparator = new wxStaticText(this, wxID_ANY, wxT("x"), wxPoint(82, 370));
 	//get the current screen resolution and use that as the default value for the output resolution of the image
 	wxString xResStr = wxString::Format(wxT("%i"), wxSystemSettings::GetMetric(wxSYS_SCREEN_X));
 	wxString yResStr = wxString::Format(wxT("%i"), wxSystemSettings::GetMetric(wxSYS_SCREEN_Y));
-	xRes = new wxTextCtrl(this, ID::ID_XRES, xResStr, wxPoint(15, 320), wxSize(60, 20), wxTE_PROCESS_ENTER, wxTextValidator(wxFILTER_DIGITS));
-	yRes = new wxTextCtrl(this, ID::ID_YRES, yResStr, wxPoint(95, 320), wxSize(60, 20), wxTE_PROCESS_ENTER, wxTextValidator(wxFILTER_DIGITS));
+	xRes = new wxTextCtrl(this, ID::ID_XRES, xResStr, wxPoint(15, 370), wxSize(60, 20), wxTE_PROCESS_ENTER, wxTextValidator(wxFILTER_DIGITS));
+	yRes = new wxTextCtrl(this, ID::ID_YRES, yResStr, wxPoint(95, 370), wxSize(60, 20), wxTE_PROCESS_ENTER, wxTextValidator(wxFILTER_DIGITS));
 
 	//super-sampling options
-	wxStaticText *ssaaLabel = new wxStaticText(this, wxID_ANY, wxT("SSAA"), wxPoint(180, 300));
+	wxStaticText *ssaaLabel = new wxStaticText(this, wxID_ANY, wxT("SSAA"), wxPoint(180, 350));
 	this->initSSAAOptions();
-	wxComboBox *ssaaOptions = new wxComboBox(this, ID::ID_SSAA_CHOOSER, wxT(""), wxPoint(180, 320), wxSize(130, 20));
+	wxComboBox *ssaaOptions = new wxComboBox(this, ID::ID_SSAA_CHOOSER, wxT(""), wxPoint(180, 370), wxSize(130, 20));
 	for (unsigned int i = 0; i < this->ssaaOptions.size(); i++){
 		ssaaOptions->Append(this->ssaaOptionNames[i]);
 	}
@@ -177,9 +188,9 @@ ImageOptionsDialog::ImageOptionsDialog(const wxString& title, const wxPoint& pos
 
 	//Add the Save and Cancel buttons
 	okButton = new wxButton(this, ID::ID_OK, wxT("Save..."));
-	okButton->SetPosition(wxPoint(80, 370));
+	okButton->SetPosition(wxPoint(80, 420));
 	cancelButton = new wxButton(this, ID::ID_CANCEL, wxT("Cancel"));
-	cancelButton->SetPosition(wxPoint(180, 370));
+	cancelButton->SetPosition(wxPoint(180, 420));
 	this->cancelButton->Disable();	//cancel button is only enabled while saving the image
 
 	//Test image
@@ -196,6 +207,22 @@ ImageOptionsDialog::ImageOptionsDialog(const wxString& title, const wxPoint& pos
 	this->generatePreviewImage();
 	this->generateColourPreview();
 	this->Refresh();
+}
+
+void ImageOptionsDialog::initInterpolationModes(){
+	interpolationModes.push_back(HeatMapColourProvider::COLOUR_INTERPOLATION_MODE::LINEAR);
+	interpolationModes.push_back(HeatMapColourProvider::COLOUR_INTERPOLATION_MODE::QUADRATIC);
+	interpolationModes.push_back(HeatMapColourProvider::COLOUR_INTERPOLATION_MODE::CUBIC);
+	interpolationModes.push_back(HeatMapColourProvider::COLOUR_INTERPOLATION_MODE::SQRT);
+	interpolationModes.push_back(HeatMapColourProvider::COLOUR_INTERPOLATION_MODE::CUBERT);
+	interpolationModes.push_back(HeatMapColourProvider::COLOUR_INTERPOLATION_MODE::CLOSEST_MATCH);
+
+	interpolationModeNames.push_back("Linear");
+	interpolationModeNames.push_back("Quadratic");
+	interpolationModeNames.push_back("Cubic");
+	interpolationModeNames.push_back("SQRT");
+	interpolationModeNames.push_back("CUBERT");
+	interpolationModeNames.push_back("Closest Match");
 }
 
 void ImageOptionsDialog::initSSAAOptions(){
@@ -261,6 +288,7 @@ void ImageOptionsDialog::okButtonEvent(wxCommandEvent& event){
 	imageOptions.outputFilename = saveFileDialog.GetPath();
 	imageOptions.heatMapFunc = this->heatMapFunc;
 	imageOptions.colourProvider = this->colourProvider;
+	imageOptions.colourInterpolationMode = this->colourInterpolationMode;
 	imageOptions.ssaaLevel = this->ssaaLevel;
 	imageOptions.invertColours = this->invertColours;
 	imageOptions.xMin = xMinVal;
@@ -407,7 +435,7 @@ void ImageOptionsDialog::generatePreviewImage(){
 	}
 	
 	//set the colour function used with the heatmap
-	imageGenerator.setColourProvider(this->colourProvider);
+	imageGenerator.setColourProvider(this->colourProvider, this->colourInterpolationMode);
 	imageGenerator.setInvertColours(this->invertColours);
 	imageGenerator.setFunction(heatMapFunc, xMinVal, xMaxVal, yMinVal, yMaxVal);
 	imageGenerator.setSSAALevel(this->ssaaLevel);
@@ -421,7 +449,7 @@ void ImageOptionsDialog::generateColourPreview(){
 	ImageGenerator imageGenerator;
 	
 	//set the colour function used with the heatmap
-	imageGenerator.setColourProvider(this->colourProvider);
+	imageGenerator.setColourProvider(this->colourProvider, this->colourInterpolationMode);
 	imageGenerator.setInvertColours(this->invertColours);
 	imageGenerator.setFunction(HeatMapFunc_GRADIENT, -10.0, 10.0, -10.0, 10.0);
 	imageGenerator.setSSAALevel(2);
@@ -447,6 +475,18 @@ void ImageOptionsDialog::colourChooserEvent(wxCommandEvent& event){
 	int selection = event.GetSelection();
 	if (selection >= 0 && selection < (int)colourProviders.size()){
 		this->colourProvider = colourProviders[selection];
+	}
+
+	this->generatePreviewImage();
+	this->generateColourPreview();
+	this->Refresh();
+}
+
+//Event for the colour interpolation mode chooser
+void ImageOptionsDialog::interpolationModeChooserEvent(wxCommandEvent& event){
+	int selection = event.GetSelection();
+	if (selection >= 0 && selection < (int)interpolationModes.size()){
+		this->colourInterpolationMode = interpolationModes[selection];
 	}
 
 	this->generatePreviewImage();
@@ -536,15 +576,15 @@ void ImageOptionsDialog::translateYPerspective(double factor){
 	yMax->SetValue(wxString::FromCDouble(yMaxVal));
 }
 
-void ImageOptionsDialog::generateImage(wxImage& image, HeatMapFunc heatFunc, HeatMapColourProvider &colourProvider, double xMin, double xMax, double yMin, double yMax, bool invertColours){
+void ImageOptionsDialog::generateImage(wxImage& image, HeatMapFunc heatFunc, HeatMapColourProvider &colourProvider, HeatMapColourProvider::COLOUR_INTERPOLATION_MODE interpolationMode, double xMin, double xMax, double yMin, double yMax, bool invertColours){
 	ImageGenerator imageGenerator;
 
 	//set the heatmap function used to generate the preview image
 	imageGenerator.setFunction(heatMapFunc, xMin, xMax, yMin, yMax);
 
 	//set the colour function used with the heatmap
-	imageGenerator.setColourProvider(this->colourProvider);
-	imageGenerator.setInvertColours(this->invertColours);
+	imageGenerator.setColourProvider(&colourProvider, interpolationMode);
+	imageGenerator.setInvertColours(invertColours);
 
 	//overwrite the image data with the new generated image.
 	imageGenerator.generateImage(&image);	//generateImage() preserves the size of the input image.

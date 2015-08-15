@@ -19,8 +19,9 @@ ImageGenerator::~ImageGenerator(void){
 
 }
 
-void ImageGenerator::setColourProvider(HeatMapColourProvider *colourProvider){
+void ImageGenerator::setColourProvider(HeatMapColourProvider *colourProvider, HeatMapColourProvider::COLOUR_INTERPOLATION_MODE interpolationMode){
 	this->colourProvider = colourProvider;
+	this->colourProvider->setInterpolationMode(interpolationMode);
 }
 
 void ImageGenerator::setFunction(HeatMapFunc f, double xMin, double xMax, double yMin, double yMax){
