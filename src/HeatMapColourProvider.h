@@ -5,12 +5,12 @@ class HeatMapColourProvider	//default colour provider
 public:
 
 	enum COLOUR_INTERPOLATION_MODE{
-		LINEAR = 1,
-		QUADRATIC,
-		CUBIC,
-		SQRT,
-		CUBERT,
-		CLOSEST_MATCH
+		CIM_LINEAR = 1,
+		CIM_QUADRATIC,
+		CIM_CUBIC,
+		CIM_SQRT,
+		CIM_CUBERT,
+		CIM_CLOSEST_MATCH
 	};
 
 	struct Colour{
@@ -18,7 +18,7 @@ public:
 		Colour(): r(0), g(0), b(0) {};
 		Colour(int r, int g, int b) : r(r), g(g), b(b) {};
 	};
-	HeatMapColourProvider(void){ interpolationMode = COLOUR_INTERPOLATION_MODE::LINEAR; }
+	HeatMapColourProvider(void){ interpolationMode = CIM_LINEAR; }
 	virtual ~HeatMapColourProvider(void){}
 	
 	/*

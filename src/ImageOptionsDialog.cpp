@@ -14,28 +14,28 @@ const double ImageOptionsDialog::X_TRANSLATE_FACTOR = 0.33;
 const double ImageOptionsDialog::Y_TRANSLATE_FACTOR = 0.33;
 
 wxBEGIN_EVENT_TABLE(ImageOptionsDialog, wxFrame)
-	EVT_BUTTON(ID::ID_OK, ImageOptionsDialog::okButtonEvent)
-	EVT_BUTTON(ID::ID_CANCEL, ImageOptionsDialog::cancelButtonEvent)
-	EVT_BUTTON(ID::ID_ZOOM_IN, ImageOptionsDialog::zoomButtonEvent)
-	EVT_BUTTON(ID::ID_ZOOM_OUT, ImageOptionsDialog::zoomButtonEvent)
-	EVT_BUTTON(ID::ID_RESET_PERSPECTIVE, ImageOptionsDialog::resetPerspectiveButtonEvent)
-	EVT_BUTTON(ID::ID_LEFT, ImageOptionsDialog::translateButtonEvent)
-	EVT_BUTTON(ID::ID_RIGHT, ImageOptionsDialog::translateButtonEvent)
-	EVT_BUTTON(ID::ID_UP, ImageOptionsDialog::translateButtonEvent)
-	EVT_BUTTON(ID::ID_DOWN, ImageOptionsDialog::translateButtonEvent)
-	EVT_BUTTON(ID::ID_TEST_IMAGE, ImageOptionsDialog::testImageButtonEvent)
-	EVT_LISTBOX(ID::ID_FUNCTION_CHOOSER, ImageOptionsDialog::functionChooserEvent)
-	EVT_COMBOBOX(ID::ID_COLOUR_CHOOSER, ImageOptionsDialog::colourChooserEvent)
-	EVT_COMBOBOX(ID::ID_INTERPOLATION_MODE_CHOOSER, ImageOptionsDialog::interpolationModeChooserEvent)
-	EVT_COMBOBOX(ID::ID_SSAA_CHOOSER, ImageOptionsDialog::ssaaChooserEvent)
-	EVT_TEXT(ID::ID_XMIN, ImageOptionsDialog::textEditEvent)
-	EVT_TEXT(ID::ID_XMAX, ImageOptionsDialog::textEditEvent)
-	EVT_TEXT(ID::ID_YMIN, ImageOptionsDialog::textEditEvent)
-	EVT_TEXT(ID::ID_YMAX, ImageOptionsDialog::textEditEvent)
-	EVT_CHECKBOX(ID::ID_INVERT_IMAGE, ImageOptionsDialog::invertImageCheckboxEvent)
-	EVT_THREAD(ID::ID_THREAD_UPDATE, ImageOptionsDialog::onThreadUpdate)
-	EVT_THREAD(ID::ID_THREAD_COMPLETE, ImageOptionsDialog::onThreadCompletion)
-	EVT_THREAD(ID::ID_THREAD_GENERATION_FINISHED, ImageOptionsDialog::onThreadGenerationFinished)
+	EVT_BUTTON(ID_OK, ImageOptionsDialog::okButtonEvent)
+	EVT_BUTTON(ID_CANCEL, ImageOptionsDialog::cancelButtonEvent)
+	EVT_BUTTON(ID_ZOOM_IN, ImageOptionsDialog::zoomButtonEvent)
+	EVT_BUTTON(ID_ZOOM_OUT, ImageOptionsDialog::zoomButtonEvent)
+	EVT_BUTTON(ID_RESET_PERSPECTIVE, ImageOptionsDialog::resetPerspectiveButtonEvent)
+	EVT_BUTTON(ID_LEFT, ImageOptionsDialog::translateButtonEvent)
+	EVT_BUTTON(ID_RIGHT, ImageOptionsDialog::translateButtonEvent)
+	EVT_BUTTON(ID_UP, ImageOptionsDialog::translateButtonEvent)
+	EVT_BUTTON(ID_DOWN, ImageOptionsDialog::translateButtonEvent)
+	EVT_BUTTON(ID_TEST_IMAGE, ImageOptionsDialog::testImageButtonEvent)
+	EVT_LISTBOX(ID_FUNCTION_CHOOSER, ImageOptionsDialog::functionChooserEvent)
+	EVT_COMBOBOX(ID_COLOUR_CHOOSER, ImageOptionsDialog::colourChooserEvent)
+	EVT_COMBOBOX(ID_INTERPOLATION_MODE_CHOOSER, ImageOptionsDialog::interpolationModeChooserEvent)
+	EVT_COMBOBOX(ID_SSAA_CHOOSER, ImageOptionsDialog::ssaaChooserEvent)
+	EVT_TEXT(ID_XMIN, ImageOptionsDialog::textEditEvent)
+	EVT_TEXT(ID_XMAX, ImageOptionsDialog::textEditEvent)
+	EVT_TEXT(ID_YMIN, ImageOptionsDialog::textEditEvent)
+	EVT_TEXT(ID_YMAX, ImageOptionsDialog::textEditEvent)
+	EVT_CHECKBOX(ID_INVERT_IMAGE, ImageOptionsDialog::invertImageCheckboxEvent)
+	EVT_THREAD(ID_THREAD_UPDATE, ImageOptionsDialog::onThreadUpdate)
+	EVT_THREAD(ID_THREAD_COMPLETE, ImageOptionsDialog::onThreadCompletion)
+	EVT_THREAD(ID_THREAD_GENERATION_FINISHED, ImageOptionsDialog::onThreadGenerationFinished)
 	EVT_CLOSE(ImageOptionsDialog::onClose)
 wxEND_EVENT_TABLE()
 
@@ -107,7 +107,7 @@ ImageOptionsDialog::ImageOptionsDialog(const wxString& title, const wxPoint& pos
 	//function chooser group box
 	functionGroupBox = new wxStaticBox(this, wxID_ANY, wxT(""), wxPoint(10,10), wxSize(320, 130));
 	functionChooserLabel = new wxStaticText(this, wxID_ANY, wxT("Function"), wxPoint(15, 20));
-	wxListBox *functionChooser = new wxListBox(this, ID::ID_FUNCTION_CHOOSER, wxPoint(15, 35), wxSize(130, 90));
+	wxListBox *functionChooser = new wxListBox(this, ID_FUNCTION_CHOOSER, wxPoint(15, 35), wxSize(130, 90));
 	for(unsigned int i = 0; i < this->heatFunctionNames.size(); i++){
 		functionChooser->Append(this->heatFunctionNames[i]);
 	}
@@ -119,35 +119,35 @@ ImageOptionsDialog::ImageOptionsDialog(const wxString& title, const wxPoint& pos
 	xMaxLabel = new wxStaticText(this, wxID_ANY, wxT("xMax"), wxPoint(250, 30));
 	yMinLabel = new wxStaticText(this, wxID_ANY, wxT("yMin"), wxPoint(180, 70));
 	yMaxLabel = new wxStaticText(this, wxID_ANY, wxT("yMax"), wxPoint(250, 70));
-	xMin = new wxTextCtrl(this, ID::ID_XMIN, wxT("-10.0"), wxPoint(180, 45), wxSize(60, 20), wxTE_PROCESS_ENTER, wxTextValidator(wxFILTER_NUMERIC));
-	xMax = new wxTextCtrl(this, ID::ID_XMAX, wxT("10.0"), wxPoint(250, 45), wxSize(60, 20), wxTE_PROCESS_ENTER, wxTextValidator(wxFILTER_NUMERIC));
-	yMin = new wxTextCtrl(this, ID::ID_YMIN, wxT("-10.0"), wxPoint(180, 85), wxSize(60, 20), wxTE_PROCESS_ENTER, wxTextValidator(wxFILTER_NUMERIC));
-	yMax = new wxTextCtrl(this, ID::ID_YMAX, wxT("10.0"), wxPoint(250, 85), wxSize(60, 20), wxTE_PROCESS_ENTER, wxTextValidator(wxFILTER_NUMERIC));
-	resetPerspectiveButton = new wxButton(this, ID::ID_RESET_PERSPECTIVE, wxT("Reset"), wxPoint(180, 110));
+	xMin = new wxTextCtrl(this, ID_XMIN, wxT("-10.0"), wxPoint(180, 45), wxSize(60, 20), wxTE_PROCESS_ENTER, wxTextValidator(wxFILTER_NUMERIC));
+	xMax = new wxTextCtrl(this, ID_XMAX, wxT("10.0"), wxPoint(250, 45), wxSize(60, 20), wxTE_PROCESS_ENTER, wxTextValidator(wxFILTER_NUMERIC));
+	yMin = new wxTextCtrl(this, ID_YMIN, wxT("-10.0"), wxPoint(180, 85), wxSize(60, 20), wxTE_PROCESS_ENTER, wxTextValidator(wxFILTER_NUMERIC));
+	yMax = new wxTextCtrl(this, ID_YMAX, wxT("10.0"), wxPoint(250, 85), wxSize(60, 20), wxTE_PROCESS_ENTER, wxTextValidator(wxFILTER_NUMERIC));
+	resetPerspectiveButton = new wxButton(this, ID_RESET_PERSPECTIVE, wxT("Reset"), wxPoint(180, 110));
 
 	imagePreviewLabel = new wxStaticText(this, wxID_ANY, wxT("Preview"), wxPoint(360, 50));
-	zoomInButton = new wxButton(this, ID::ID_ZOOM_IN, wxT("Zoom +"), wxPoint(490, 40));
-	zoomOutButton = new wxButton(this, ID::ID_ZOOM_OUT, wxT("Zoom -"), wxPoint(590, 40));
+	zoomInButton = new wxButton(this, ID_ZOOM_IN, wxT("Zoom +"), wxPoint(490, 40));
+	zoomOutButton = new wxButton(this, ID_ZOOM_OUT, wxT("Zoom -"), wxPoint(590, 40));
 	imagePreviewPanel = new wxImagePanel(this, wxID_ANY, wxPoint(360, 70), wxSize(320, 180), &previewImage);
 
 	//translation buttons
-	upButton = new wxButton(this, ID::ID_UP, wxT("^"), wxPoint(480, 260));
-	downButton = new wxButton(this, ID::ID_DOWN, wxT("v"), wxPoint(480, 320));
-	leftButton = new wxButton(this, ID::ID_LEFT, wxT("<"), wxPoint(430, 290));
-	rightButton = new wxButton(this, ID::ID_RIGHT, wxT(">"), wxPoint(530, 290));
+	upButton = new wxButton(this, ID_UP, wxT("^"), wxPoint(480, 260));
+	downButton = new wxButton(this, ID_DOWN, wxT("v"), wxPoint(480, 320));
+	leftButton = new wxButton(this, ID_LEFT, wxT("<"), wxPoint(430, 290));
+	rightButton = new wxButton(this, ID_RIGHT, wxT(">"), wxPoint(530, 290));
 
 	//colour settings
 	colourGroupBox = new wxStaticBox(this, wxID_ANY, wxT(""), wxPoint(10, 150), wxSize(320, 150));
 	colorSettingsLabel = new wxStaticText(this, wxID_ANY, wxT("Colors"), wxPoint(15, 160));
 	colourPreviewPanel = new wxImagePanel(this, wxID_ANY, wxPoint(15, 180), wxSize(305, 20), &colourPreview);
-	invertImageCheckBox = new wxCheckBox(this, ID::ID_INVERT_IMAGE, wxT("Invert"), wxPoint(200, 275));
+	invertImageCheckBox = new wxCheckBox(this, ID_INVERT_IMAGE, wxT("Invert"), wxPoint(200, 275));
 	invertColours = false;
 	colorLegendLabel_0 = new wxStaticText(this, wxID_ANY, wxT("0.0"), wxPoint(15, 200));
 	colorLegendLabel_1 = new wxStaticText(this, wxID_ANY, wxT("1.0"), wxPoint(305, 200));
 
 	//colour chooser
 	wxStaticText* colorChooserLabel = new wxStaticText(this, wxID_ANY, wxT("Palette"), wxPoint(15, 220));
-	wxComboBox *colourChooser = new wxComboBox(this, ID::ID_COLOUR_CHOOSER, wxT(""), wxPoint(15, 240), wxSize(130, 25));
+	wxComboBox *colourChooser = new wxComboBox(this, ID_COLOUR_CHOOSER, wxT(""), wxPoint(15, 240), wxSize(130, 25));
 	for (unsigned int i = 0; i < this->colourProviderNames.size(); i++){
 		colourChooser->Append(this->colourProviderNames[i]);
 	}
@@ -155,7 +155,7 @@ ImageOptionsDialog::ImageOptionsDialog(const wxString& title, const wxPoint& pos
 
 	//interpolation types
 	wxStaticText* interpolationModeLabel = new wxStaticText(this, wxID_ANY, wxT("Interpolation"), wxPoint(180, 220));
-	wxComboBox *interpolationModeChooser = new wxComboBox(this, ID::ID_INTERPOLATION_MODE_CHOOSER, wxT(""), wxPoint(180, 240), wxSize(130, 25));
+	wxComboBox *interpolationModeChooser = new wxComboBox(this, ID_INTERPOLATION_MODE_CHOOSER, wxT(""), wxPoint(180, 240), wxSize(130, 25));
 	this->initInterpolationModes();
 	for (unsigned int i = 0; i < this->interpolationModes.size(); i++){
 		interpolationModeChooser->Append(this->interpolationModeNames[i]);
@@ -170,13 +170,13 @@ ImageOptionsDialog::ImageOptionsDialog(const wxString& title, const wxPoint& pos
 	//get the current screen resolution and use that as the default value for the output resolution of the image
 	wxString xResStr = wxString::Format(wxT("%i"), wxSystemSettings::GetMetric(wxSYS_SCREEN_X));
 	wxString yResStr = wxString::Format(wxT("%i"), wxSystemSettings::GetMetric(wxSYS_SCREEN_Y));
-	xRes = new wxTextCtrl(this, ID::ID_XRES, xResStr, wxPoint(15, 370), wxSize(60, 20), wxTE_PROCESS_ENTER, wxTextValidator(wxFILTER_DIGITS));
-	yRes = new wxTextCtrl(this, ID::ID_YRES, yResStr, wxPoint(95, 370), wxSize(60, 20), wxTE_PROCESS_ENTER, wxTextValidator(wxFILTER_DIGITS));
+	xRes = new wxTextCtrl(this, ID_XRES, xResStr, wxPoint(15, 370), wxSize(60, 20), wxTE_PROCESS_ENTER, wxTextValidator(wxFILTER_DIGITS));
+	yRes = new wxTextCtrl(this, ID_YRES, yResStr, wxPoint(95, 370), wxSize(60, 20), wxTE_PROCESS_ENTER, wxTextValidator(wxFILTER_DIGITS));
 
 	//super-sampling options
 	wxStaticText *ssaaLabel = new wxStaticText(this, wxID_ANY, wxT("SSAA"), wxPoint(180, 350));
 	this->initSSAAOptions();
-	wxComboBox *ssaaOptions = new wxComboBox(this, ID::ID_SSAA_CHOOSER, wxT(""), wxPoint(180, 370), wxSize(130, 20));
+	wxComboBox *ssaaOptions = new wxComboBox(this, ID_SSAA_CHOOSER, wxT(""), wxPoint(180, 370), wxSize(130, 20));
 	for (unsigned int i = 0; i < this->ssaaOptions.size(); i++){
 		ssaaOptions->Append(this->ssaaOptionNames[i]);
 	}
@@ -184,14 +184,14 @@ ImageOptionsDialog::ImageOptionsDialog(const wxString& title, const wxPoint& pos
 	ssaaOptions->SetSelection(1);
 
 	//Add the Save and Cancel buttons
-	okButton = new wxButton(this, ID::ID_OK, wxT("Save..."));
+	okButton = new wxButton(this, ID_OK, wxT("Save..."));
 	okButton->SetPosition(wxPoint(80, 420));
-	cancelButton = new wxButton(this, ID::ID_CANCEL, wxT("Cancel"));
+	cancelButton = new wxButton(this, ID_CANCEL, wxT("Cancel"));
 	cancelButton->SetPosition(wxPoint(180, 420));
 	this->cancelButton->Disable();	//cancel button is only enabled while saving the image
 
 	//Test image
-	//wxButton *testButton = new wxButton(this, ID::ID_TEST_IMAGE, wxT("TEST"), wxPoint(280, 370));
+	//wxButton *testButton = new wxButton(this, ID_TEST_IMAGE, wxT("TEST"), wxPoint(280, 370));
 
 	//status bar
 	CreateStatusBar(1);
@@ -207,12 +207,12 @@ ImageOptionsDialog::ImageOptionsDialog(const wxString& title, const wxPoint& pos
 }
 
 void ImageOptionsDialog::initInterpolationModes(){
-	interpolationModes.push_back(HeatMapColourProvider::COLOUR_INTERPOLATION_MODE::LINEAR);
-	interpolationModes.push_back(HeatMapColourProvider::COLOUR_INTERPOLATION_MODE::QUADRATIC);
-	interpolationModes.push_back(HeatMapColourProvider::COLOUR_INTERPOLATION_MODE::CUBIC);
-	interpolationModes.push_back(HeatMapColourProvider::COLOUR_INTERPOLATION_MODE::SQRT);
-	interpolationModes.push_back(HeatMapColourProvider::COLOUR_INTERPOLATION_MODE::CUBERT);
-	interpolationModes.push_back(HeatMapColourProvider::COLOUR_INTERPOLATION_MODE::CLOSEST_MATCH);
+	interpolationModes.push_back(HeatMapColourProvider::CIM_LINEAR);
+	interpolationModes.push_back(HeatMapColourProvider::CIM_QUADRATIC);
+	interpolationModes.push_back(HeatMapColourProvider::CIM_CUBIC);
+	interpolationModes.push_back(HeatMapColourProvider::CIM_SQRT);
+	interpolationModes.push_back(HeatMapColourProvider::CIM_CUBERT);
+	interpolationModes.push_back(HeatMapColourProvider::CIM_CLOSEST_MATCH);
 
 	interpolationModeNames.push_back("Linear");
 	interpolationModeNames.push_back("Quadratic");
@@ -223,10 +223,10 @@ void ImageOptionsDialog::initInterpolationModes(){
 }
 
 void ImageOptionsDialog::initSSAAOptions(){
-	ssaaOptions.push_back(SSAA_OPTIONS::SSAA_NONE);
-	ssaaOptions.push_back(SSAA_OPTIONS::SSAA_2X);
-	ssaaOptions.push_back(SSAA_OPTIONS::SSAA_4X);
-	ssaaOptions.push_back(SSAA_OPTIONS::SSAA_8X);
+	ssaaOptions.push_back(SSAA_NONE);
+	ssaaOptions.push_back(SSAA_2X);
+	ssaaOptions.push_back(SSAA_4X);
+	ssaaOptions.push_back(SSAA_8X);
 
 	ssaaOptionNames.push_back("None");
 	ssaaOptionNames.push_back("2X");
@@ -263,7 +263,7 @@ void ImageOptionsDialog::okButtonEvent(wxCommandEvent& event){
 		return;
 	}
 
-	wxListBox* functionListBox = (wxListBox*)this->FindWindowById(ID::ID_FUNCTION_CHOOSER);
+	wxListBox* functionListBox = (wxListBox*)this->FindWindowById(ID_FUNCTION_CHOOSER);
 	int selection = functionListBox->GetSelection();
 	wxString functionName = functionListBox->GetString(selection);
 	wxString defaultFilename = wxString::Format("%s_%dx%d", functionName, imageWidthPx, imageHeightPx);
@@ -346,13 +346,13 @@ void ImageOptionsDialog::zoomButtonEvent(wxCommandEvent& event){
 	
 	//multiply the coordinates by a factor less than 1 to zoom in or more than 1 to zoom out
 	switch(event.GetId()){
-	case ID::ID_ZOOM_IN:
+	case ID_ZOOM_IN:
 		xMinVal = xCenter - xDist*ZOOM_IN_FACTOR;
 		xMaxVal = xCenter + xDist*ZOOM_IN_FACTOR;
 		yMinVal = yCenter - yDist*ZOOM_IN_FACTOR;
 		yMaxVal = yCenter + yDist*ZOOM_IN_FACTOR;
 		break;
-	case ID::ID_ZOOM_OUT:
+	case ID_ZOOM_OUT:
 		xMinVal = xCenter - xDist*ZOOM_OUT_FACTOR;
 		xMaxVal = xCenter + xDist*ZOOM_OUT_FACTOR;
 		yMinVal = yCenter - yDist*ZOOM_OUT_FACTOR;
@@ -513,16 +513,16 @@ void ImageOptionsDialog::invertImageCheckboxEvent(wxCommandEvent& event){
 //translate buttons
 void ImageOptionsDialog::translateButtonEvent(wxCommandEvent& event){
 	switch(event.GetId()){
-	case ID::ID_UP:
+	case ID_UP:
 		translateYPerspective(-Y_TRANSLATE_FACTOR);
 		break;
-	case ID::ID_DOWN:
+	case ID_DOWN:
 		translateYPerspective(Y_TRANSLATE_FACTOR);
 		break;
-	case ID::ID_LEFT:
+	case ID_LEFT:
 		translateXPerspective(-X_TRANSLATE_FACTOR);
 		break;
-	case ID::ID_RIGHT:
+	case ID_RIGHT:
 		translateXPerspective(X_TRANSLATE_FACTOR);
 		break;
 	default:

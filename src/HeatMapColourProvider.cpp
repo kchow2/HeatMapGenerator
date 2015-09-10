@@ -7,22 +7,22 @@ void HeatMapColourProvider::setInterpolationMode(COLOUR_INTERPOLATION_MODE mode)
 
 //helper func to interpolate values linearly from a colour array
 HeatMapColourProvider::Colour HeatMapColourProvider::getInterpolatedColourValue(double value, const int *rValues, const int *gValues, const int *bValues, int colourArraySize){
-	if (this->interpolationMode == COLOUR_INTERPOLATION_MODE::LINEAR){
+	if (this->interpolationMode == CIM_LINEAR){
 		//value = value;
 	}
-	else if (this->interpolationMode == COLOUR_INTERPOLATION_MODE::QUADRATIC){
+	else if (this->interpolationMode == CIM_QUADRATIC){
 		value = value*value;
 	}
-	else if (this->interpolationMode == COLOUR_INTERPOLATION_MODE::CUBIC){
+	else if (this->interpolationMode == CIM_CUBIC){
 		value = value*value*value;
 	}
-	else if (this->interpolationMode == COLOUR_INTERPOLATION_MODE::SQRT){
+	else if (this->interpolationMode == CIM_SQRT){
 		value = std::sqrt(value);
 	}
-	else if (this->interpolationMode == COLOUR_INTERPOLATION_MODE::CUBERT){
+	else if (this->interpolationMode == CIM_CUBERT){
 		value = std::pow(value, 1.0 / 3.0);
 	}
-	else if (this->interpolationMode == COLOUR_INTERPOLATION_MODE::CLOSEST_MATCH){
+	else if (this->interpolationMode == CIM_CLOSEST_MATCH){
 		return getClosestColourMatch(value, rValues, gValues, bValues, colourArraySize);
 	}
 		

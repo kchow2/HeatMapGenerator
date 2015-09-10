@@ -15,7 +15,7 @@ wxThread::ExitCode ImageGeneratorThreadController::Entry()
 	//wxMessageBox(wxString::Format("Generation took %d ms.", timeElapsedMs));
 	
 	// signal the event handler that this thread is going to be destroyed
-	wxQueueEvent(this->handler, new wxThreadEvent(wxEVT_THREAD, ImageOptionsDialog::ID::ID_THREAD_COMPLETE));
+	wxQueueEvent(this->handler, new wxThreadEvent(wxEVT_THREAD, ImageOptionsDialog::ID_THREAD_COMPLETE));
 	return (wxThread::ExitCode)0;     // success
 }
 
@@ -46,7 +46,7 @@ bool ImageGeneratorThreadController::generateImage(){
 	}
 
 	//notify the main window we have finished generating the image
-	wxQueueEvent(this->handler, new wxThreadEvent(wxEVT_THREAD, ImageOptionsDialog::ID::ID_THREAD_GENERATION_FINISHED));
+	wxQueueEvent(this->handler, new wxThreadEvent(wxEVT_THREAD, ImageOptionsDialog::ID_THREAD_GENERATION_FINISHED));
 
 	//save the png file
 	wxFileOutputStream outputStream(imageOptions.outputFilename);
@@ -99,7 +99,7 @@ bool ImageGeneratorThreadController::generateImageMT(int nThreads){
 	threads.clear();
 
 	//notify the main window we have finished generating the image
-	wxQueueEvent(this->handler, new wxThreadEvent(wxEVT_THREAD, ImageOptionsDialog::ID::ID_THREAD_GENERATION_FINISHED));
+	wxQueueEvent(this->handler, new wxThreadEvent(wxEVT_THREAD, ImageOptionsDialog::ID_THREAD_GENERATION_FINISHED));
 
 	//if the user cancelled, return immediately without saving the file
 	//If we save the image when the user cancelled in the middle of generation, we will end up with a half generated image with black parts where it wasn't generated yet.
@@ -128,7 +128,7 @@ bool ImageGeneratorThreadController::onProgressUpdate(int workDone, int totalWor
 		return false; 
 	}
 	//send a progress update event to the main thread
-	wxThreadEvent *threadEvent = new wxThreadEvent(wxEVT_THREAD, ImageOptionsDialog::ID::ID_THREAD_UPDATE);
+	wxThreadEvent *threadEvent = new wxThreadEvent(wxEVT_THREAD, ImageOptionsDialog::ID_THREAD_UPDATE);
 	threadEvent->SetInt(workDone * 100 / totalWork);
 	wxQueueEvent(this->handler, threadEvent);
 	return true;
@@ -144,7 +144,7 @@ bool ImageGeneratorThreadController::onWorkerThreadProgressUpdate(int threadId, 
 	wxCriticalSectionLocker csLocker(this->rowsGeneratedCS);
 	this->rowsGenerated++;
 	//send a progress update event to the main thread
-	wxThreadEvent *threadEvent = new wxThreadEvent(wxEVT_THREAD, ImageOptionsDialog::ID::ID_THREAD_UPDATE);
+	wxThreadEvent *threadEvent = new wxThreadEvent(wxEVT_THREAD, ImageOptionsDialog::ID_THREAD_UPDATE);
 	threadEvent->SetInt(this->rowsGenerated * 100 / this->totalRows);
 	wxQueueEvent(this->handler, threadEvent);
 	return true;
