@@ -1,4 +1,5 @@
 #include "HeatMapColourProvider.h"
+#include <math.h>
 #include <algorithm>
 
 void HeatMapColourProvider::setInterpolationMode(COLOUR_INTERPOLATION_MODE mode){
