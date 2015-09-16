@@ -17,10 +17,10 @@ HeatMapColourProvider::Colour HeatMapColourProvider::getInterpolatedColourValue(
 		value = value*value*value;
 	}
 	else if (this->interpolationMode == CIM_SQRT){
-		value = std::sqrt(value);
+		value = sqrt(value);
 	}
 	else if (this->interpolationMode == CIM_CUBERT){
-		value = std::pow(value, 1.0 / 3.0);
+		value = pow(value, 1.0 / 3.0);
 	}
 	else if (this->interpolationMode == CIM_CLOSEST_MATCH){
 		return getClosestColourMatch(value, rValues, gValues, bValues, colourArraySize);
