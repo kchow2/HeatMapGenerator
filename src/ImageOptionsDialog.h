@@ -3,7 +3,7 @@
 #include <vector>
 #include "ImageGenerator.h"
 #include "HeatMapColourProvider.h"
-#include "wxImagePanel.h"
+#include "wxPreviewImagePanel.h"
 #include "ImageGeneratorThreadController.h"
 
 //struct ImageOptions;
@@ -50,7 +50,7 @@ private:
 
 	enum ID
 	{
-		ID_OK = 1,
+		ID_OK = 1000,
 		ID_CANCEL,
 		ID_FUNCTION_CHOOSER,
 		ID_COLOUR_CHOOSER,
@@ -113,7 +113,7 @@ private:
 	wxStaticText *colorSettingsLabel, *outputSettingsLabel;
 	wxStaticText *colorLegendLabel_0, *colorLegendLabel_1;
 	wxCheckBox *invertImageCheckBox;
-	wxImagePanel *colourPreviewPanel, *imagePreviewPanel;
+	wxPreviewImagePanel *colourPreviewPanel, *imagePreviewPanel;
 	wxButton *leftButton, *rightButton, *upButton, *downButton;
 	wxStaticBox *functionGroupBox, *colourGroupBox, *outputSettingsGroupBox;
 	
@@ -129,6 +129,10 @@ private:
 
 	//used for worker thread. Flag that indicates whether the main window should close when the worker thread finishes.
 	bool shouldQuit;
+	
+	//false before the constructor has finished initializing all of the controls, true otherwise. 
+	//This is to prevent the callbacks from trying to read the values of controls that haven't been created yet!
+	bool dialogInitialized;
 
 	//our worker thread to generate the output images
 	ImageGeneratorThreadController *imageGeneratorThreadController;

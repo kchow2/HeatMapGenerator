@@ -39,11 +39,16 @@ wxBEGIN_EVENT_TABLE(ImageOptionsDialog, wxFrame)
 	EVT_CLOSE(ImageOptionsDialog::onClose)
 wxEND_EVENT_TABLE()
 
+
 ImageOptionsDialog::ImageOptionsDialog(const wxString& title, const wxPoint& pos) 
 : wxFrame(NULL, wxID_ANY, title, pos, wxSize(720, 520)) {
+	//This is true once all of the controls have been initialized.
+	this->dialogInitialized = false;
 	
+	#ifdef WINDOWS
 	//set the main icon
 	this->SetIcon(wxIcon("main_icon"));
+	#endif
 	
 	//populate the list of available heatmap functions we can use to generate the image
 	addHeatFunc(HeatMapFunc_SinXY, "sin(xy)");
@@ -128,7 +133,7 @@ ImageOptionsDialog::ImageOptionsDialog(const wxString& title, const wxPoint& pos
 	imagePreviewLabel = new wxStaticText(this, wxID_ANY, wxT("Preview"), wxPoint(360, 50));
 	zoomInButton = new wxButton(this, ID_ZOOM_IN, wxT("Zoom +"), wxPoint(490, 40));
 	zoomOutButton = new wxButton(this, ID_ZOOM_OUT, wxT("Zoom -"), wxPoint(590, 40));
-	imagePreviewPanel = new wxImagePanel(this, wxID_ANY, wxPoint(360, 70), wxSize(320, 180), &previewImage);
+	imagePreviewPanel = new wxPreviewImagePanel(this, wxID_ANY, wxPoint(360, 70), wxSize(320, 180), &previewImage);
 
 	//translation buttons
 	upButton = new wxButton(this, ID_UP, wxT("^"), wxPoint(480, 260));
@@ -139,7 +144,7 @@ ImageOptionsDialog::ImageOptionsDialog(const wxString& title, const wxPoint& pos
 	//colour settings
 	colourGroupBox = new wxStaticBox(this, wxID_ANY, wxT(""), wxPoint(10, 150), wxSize(320, 150));
 	colorSettingsLabel = new wxStaticText(this, wxID_ANY, wxT("Colors"), wxPoint(15, 160));
-	colourPreviewPanel = new wxImagePanel(this, wxID_ANY, wxPoint(15, 180), wxSize(305, 20), &colourPreview);
+	colourPreviewPanel = new wxPreviewImagePanel(this, wxID_ANY, wxPoint(15, 180), wxSize(305, 20), &colourPreview);
 	invertImageCheckBox = new wxCheckBox(this, ID_INVERT_IMAGE, wxT("Invert"), wxPoint(200, 275));
 	invertColours = false;
 	colorLegendLabel_0 = new wxStaticText(this, wxID_ANY, wxT("0.0"), wxPoint(15, 200));
@@ -193,14 +198,16 @@ ImageOptionsDialog::ImageOptionsDialog(const wxString& title, const wxPoint& pos
 	//Test image
 	//wxButton *testButton = new wxButton(this, ID_TEST_IMAGE, wxT("TEST"), wxPoint(280, 370));
 
-	//status bar
+	//status bar for displaying save image progress
 	CreateStatusBar(1);
 
 	this->shouldQuit = false;
-
 	this->imageGeneratorThreadController = 0;
 	this->heatMapFunc = HeatMapFunc_SinXY;
 	this->colourProvider = colourProviders[0];
+	
+	this->dialogInitialized = true;	
+
 	this->generatePreviewImage();
 	this->generateColourPreview();
 	this->Refresh();
@@ -266,7 +273,7 @@ void ImageOptionsDialog::okButtonEvent(wxCommandEvent& event){
 	wxListBox* functionListBox = (wxListBox*)this->FindWindowById(ID_FUNCTION_CHOOSER);
 	int selection = functionListBox->GetSelection();
 	wxString functionName = functionListBox->GetString(selection);
-	wxString defaultFilename = wxString::Format("%s_%dx%d", functionName, imageWidthPx, imageHeightPx);
+	wxString defaultFilename = wxString::Format("%s_%dx%d", functionName, (int)imageWidthPx, (int)imageHeightPx);
 	wxFileDialog saveFileDialog(this, wxT("Save image"), wxT(""), defaultFilename,
                        wxT("PNG file (*.png)|*.png"), wxFD_SAVE|wxFD_OVERWRITE_PROMPT);
 	
@@ -398,6 +405,11 @@ void ImageOptionsDialog::resetPerspectiveButtonEvent(wxCommandEvent& event){
 
 //Event handler for text edit events. Called whenever any of the values of xMin, xMax, yMin, yMax are changed. 
 void ImageOptionsDialog::textEditEvent(wxCommandEvent& event){
+	//On Linux systems, text edit events are sent before the contructor finishes! Need to make sure everything is initialized
+	//before trying to render anything!	
+	if(!this->dialogInitialized)
+		return;
+
 	//The values of xMin, xMax, yMin, yMax have changed; we need to regenerate the preview image
 	this->generatePreviewImage();
 	
@@ -590,8 +602,10 @@ void ImageOptionsDialog::generateImage(wxImage& image, HeatMapFunc heatFunc, Hea
 
 //getters and setters for the edit controls for xMin,xMax,yMin,yMax,xRes,yRes
 bool ImageOptionsDialog::getDoubleFromEditControl(double &d, int windowId){
+	//return false;	
 	double res;
-	if (((wxTextCtrl*)this->FindWindowById(windowId))->GetValue().ToCDouble(&res)){
+	wxTextCtrl* editCtrl = (wxTextCtrl*)this->FindWindowById(windowId, this);
+	if (editCtrl && editCtrl->GetValue().ToCDouble(&res)){
 		d = res;
 		return true;
 	}
@@ -599,8 +613,10 @@ bool ImageOptionsDialog::getDoubleFromEditControl(double &d, int windowId){
 }
 
 bool ImageOptionsDialog::getUlongFromEditControl(unsigned long &i, int windowId){
+	//return false;	
 	unsigned long res;
-	if (((wxTextCtrl*)this->FindWindowById(windowId))->GetValue().ToCULong(&res)){
+	wxTextCtrl* editCtrl = (wxTextCtrl*)this->FindWindowById(windowId, this);
+	if (editCtrl && editCtrl->GetValue().ToCULong(&res)){
 		i = res;
 		return true;
 	}
@@ -608,11 +624,11 @@ bool ImageOptionsDialog::getUlongFromEditControl(unsigned long &i, int windowId)
 }
 
 void ImageOptionsDialog::setEditControlDouble(double d, int windowId){
-	((wxTextCtrl*)this->FindWindowById(windowId))->SetValue(wxString::FromCDouble(d));
+	((wxTextCtrl*)this->FindWindowById(windowId, this))->SetValue(wxString::FromCDouble(d));
 }
 
 void ImageOptionsDialog::setEditControlInt(int i, int windowId){
-	((wxTextCtrl*)this->FindWindowById(windowId))->SetValue(wxString::Format("%i", i));
+	((wxTextCtrl*)this->FindWindowById(windowId, this))->SetValue(wxString::Format("%i", i));
 }
 
 //frees allocated objects to avoid mem leaks
