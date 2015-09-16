@@ -243,8 +243,8 @@ void ImageOptionsDialog::initSSAAOptions(){
 void ImageOptionsDialog::okButtonEvent(wxCommandEvent& event){
 	//read the values from the controls for the width and height of the output
 	unsigned long imageWidthPx, imageHeightPx;
-	bool res = this->xRes->GetValue().ToCULong(&imageWidthPx);
-	res &= this->yRes->GetValue().ToCULong(&imageHeightPx);
+	bool res = getUlongFromEditControl(imageWidthPx, ID_XRES);
+	res &= getUlongFromEditControl(imageHeightPx, ID_YRES);
 	if(!res){
 		wxMessageBox(wxT("Invalid resolution!"));
 		return;
@@ -252,10 +252,10 @@ void ImageOptionsDialog::okButtonEvent(wxCommandEvent& event){
 
 	//read the values for xMin, xMax, yMin, yMax
 	double xMinVal, yMinVal, xMaxVal, yMaxVal;
-	res = xMin->GetValue().ToCDouble(&xMinVal);
-	res &= xMax->GetValue().ToCDouble(&xMaxVal);
-	res &= yMin->GetValue().ToCDouble(&yMinVal);
-	res &= yMax->GetValue().ToCDouble(&yMaxVal);
+	res = getDoubleFromEditControl(xMinVal, ID_XMIN);
+	res &= getDoubleFromEditControl(xMaxVal, ID_XMAX);
+	res &= getDoubleFromEditControl(yMinVal, ID_YMIN);
+	res &= getDoubleFromEditControl(yMaxVal, ID_YMAX);
 	
 	//if one of the values could not be read. Don't update the preview until we have valid values in all of the boxes.
 	if(!res){	
@@ -324,10 +324,10 @@ void ImageOptionsDialog::zoomButtonEvent(wxCommandEvent& event){
 	
 	//read the values from the edit controls
 	double xMinVal, yMinVal, xMaxVal, yMaxVal;
-	bool res = xMin->GetValue().ToCDouble(&xMinVal);
-	res &= xMax->GetValue().ToCDouble(&xMaxVal);
-	res &= yMin->GetValue().ToCDouble(&yMinVal);
-	res &= yMax->GetValue().ToCDouble(&yMaxVal);
+	bool res = getDoubleFromEditControl(xMinVal, ID_XMIN);
+	res &= getDoubleFromEditControl(xMaxVal, ID_XMAX);
+	res &= getDoubleFromEditControl(yMinVal, ID_YMIN);
+	res &= getDoubleFromEditControl(yMaxVal, ID_YMAX);
 	
 	//if one of the values could not be read, don't update the preview until we have valid values in all of the boxes.
 	if(!res){	
@@ -361,10 +361,10 @@ void ImageOptionsDialog::zoomButtonEvent(wxCommandEvent& event){
 	}
 
 	//update the edit controls with the new values
-	xMin->SetValue(wxString::FromCDouble(xMinVal));
-	xMax->SetValue(wxString::FromCDouble(xMaxVal));
-	yMin->SetValue(wxString::FromCDouble(yMinVal));
-	yMax->SetValue(wxString::FromCDouble(yMaxVal));
+	setEditControlDouble(xMinVal, ID_XMIN);
+	setEditControlDouble(xMaxVal, ID_XMAX);
+	setEditControlDouble(yMinVal, ID_YMIN);
+	setEditControlDouble(yMaxVal, ID_YMAX);
 
 	//generate the preview image and redraw the screen
 	this->generatePreviewImage();
@@ -373,10 +373,10 @@ void ImageOptionsDialog::zoomButtonEvent(wxCommandEvent& event){
 
 //sets the preview image to Mandelbrot at some preset coords so we can compare the image quality between changes to rendering techniques
 void ImageOptionsDialog::testImageButtonEvent(wxCommandEvent& event){
-	xMin->SetValue(wxString::FromCDouble(-0.0355469));
-	xMax->SetValue(wxString::FromCDouble(-0.0160157));
-	yMin->SetValue(wxString::FromCDouble(-0.783203));
-	yMax->SetValue(wxString::FromCDouble(-0.763672));
+	setEditControlDouble(-0.0355469, ID_XMIN);
+	setEditControlDouble(-0.0160157, ID_XMAX);
+	setEditControlDouble(-0.783203, ID_YMIN);
+	setEditControlDouble(-0.763672, ID_YMAX);
 	this->heatMapFunc = HeatMapFunc_MANDELBROT;
 
 	//generate the preview image and redraw the screen
@@ -386,10 +386,10 @@ void ImageOptionsDialog::testImageButtonEvent(wxCommandEvent& event){
 
 //resets the perspective back to the default of ((-10,10),(-10,10))
 void ImageOptionsDialog::resetPerspectiveButtonEvent(wxCommandEvent& event){
-	xMin->SetValue(wxString::FromCDouble(-10.0));
-	xMax->SetValue(wxString::FromCDouble(10.0));
-	yMin->SetValue(wxString::FromCDouble(-10.0));
-	yMax->SetValue(wxString::FromCDouble(10.0));
+	setEditControlDouble(-10.0, ID_XMIN);
+	setEditControlDouble(10.0, ID_XMAX);
+	setEditControlDouble(-10.0, ID_YMIN);
+	setEditControlDouble(10.0, ID_YMAX);
 
 	//generate the preview image and redraw the screen
 	this->generatePreviewImage();
@@ -421,10 +421,10 @@ void ImageOptionsDialog::addColourProvider(HeatMapColourProvider *colourProvider
 void ImageOptionsDialog::generatePreviewImage(){
 	ImageGenerator imageGenerator;
 	double xMinVal, yMinVal, xMaxVal, yMaxVal;
-	bool res = xMin->GetValue().ToCDouble(&xMinVal);
-	res &= xMax->GetValue().ToCDouble(&xMaxVal);
-	res &= yMin->GetValue().ToCDouble(&yMinVal);
-	res &= yMax->GetValue().ToCDouble(&yMaxVal);
+	bool res = getDoubleFromEditControl(xMinVal, ID_XMIN);
+	res &= getDoubleFromEditControl(xMaxVal, ID_XMAX);
+	res &= getDoubleFromEditControl(yMinVal, ID_YMIN);
+	res &= getDoubleFromEditControl(yMaxVal, ID_YMAX);
 	
 	//if one of the values could not be read. Don't update the preview until we have valid values in all of the boxes.
 	if(!res){	
@@ -537,8 +537,8 @@ void ImageOptionsDialog::translateButtonEvent(wxCommandEvent& event){
 //For example, if factor==0.5 then it will shift the perspective by half a screen in the positive x direction
 void ImageOptionsDialog::translateXPerspective(double factor){
 	double xMinVal, xMaxVal;
-	bool res = xMin->GetValue().ToCDouble(&xMinVal);
-	res &= xMax->GetValue().ToCDouble(&xMaxVal);
+	bool res = getDoubleFromEditControl(xMinVal, ID_XMIN);
+	res &= getDoubleFromEditControl(xMaxVal, ID_XMAX);
 	
 	//if one of the values could not be read, we can't finish the calculation
 	if(!res){	
@@ -549,16 +549,16 @@ void ImageOptionsDialog::translateXPerspective(double factor){
 	xMinVal += xTrans;
 	xMaxVal += xTrans;
 
-	xMin->SetValue(wxString::FromCDouble(xMinVal));
-	xMax->SetValue(wxString::FromCDouble(xMaxVal));
+	setEditControlDouble(xMinVal, ID_XMIN);
+	setEditControlDouble(xMaxVal, ID_XMAX);
 }
 
 //Shifts the perspective along the y axis by a factor depending on the size of the current perspective.
 //For example, if factor==0.5 then it will shift the perspective by half a screen in the positive y direction
 void ImageOptionsDialog::translateYPerspective(double factor){
 	double yMinVal, yMaxVal;
-	bool res = yMin->GetValue().ToCDouble(&yMinVal);
-	res &= yMax->GetValue().ToCDouble(&yMaxVal);
+	bool res = getDoubleFromEditControl(yMinVal, ID_YMIN);
+	res &= getDoubleFromEditControl(yMaxVal, ID_YMAX);
 	
 	//if one of the values could not be read, we can't finish the calculation
 	if(!res){	
@@ -569,8 +569,9 @@ void ImageOptionsDialog::translateYPerspective(double factor){
 	yMinVal += yTrans;
 	yMaxVal += yTrans;
 
-	yMin->SetValue(wxString::FromCDouble(yMinVal));
-	yMax->SetValue(wxString::FromCDouble(yMaxVal));
+	
+	setEditControlDouble(yMinVal, ID_YMIN);
+	setEditControlDouble(yMaxVal, ID_YMAX);
 }
 
 void ImageOptionsDialog::generateImage(wxImage& image, HeatMapFunc heatFunc, HeatMapColourProvider &colourProvider, HeatMapColourProvider::COLOUR_INTERPOLATION_MODE interpolationMode, double xMin, double xMax, double yMin, double yMax, bool invertColours){
@@ -585,6 +586,33 @@ void ImageOptionsDialog::generateImage(wxImage& image, HeatMapFunc heatFunc, Hea
 
 	//overwrite the image data with the new generated image.
 	imageGenerator.generateImage(&image);	//generateImage() preserves the size of the input image.
+}
+
+//getters and setters for the edit controls for xMin,xMax,yMin,yMax,xRes,yRes
+bool ImageOptionsDialog::getDoubleFromEditControl(double &d, int windowId){
+	double res;
+	if (((wxTextCtrl*)this->FindWindowById(windowId))->GetValue().ToCDouble(&res)){
+		d = res;
+		return true;
+	}
+	return false;
+}
+
+bool ImageOptionsDialog::getUlongFromEditControl(unsigned long &i, int windowId){
+	unsigned long res;
+	if (((wxTextCtrl*)this->FindWindowById(windowId))->GetValue().ToCULong(&res)){
+		i = res;
+		return true;
+	}
+	return false;
+}
+
+void ImageOptionsDialog::setEditControlDouble(double d, int windowId){
+	((wxTextCtrl*)this->FindWindowById(windowId))->SetValue(wxString::FromCDouble(d));
+}
+
+void ImageOptionsDialog::setEditControlInt(int i, int windowId){
+	((wxTextCtrl*)this->FindWindowById(windowId))->SetValue(wxString::Format("%i", i));
 }
 
 //frees allocated objects to avoid mem leaks

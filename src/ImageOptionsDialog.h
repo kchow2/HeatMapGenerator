@@ -37,6 +37,10 @@ private:
 	void generateColourPreview();
 	void generateImage(wxImage& image, HeatMapFunc heatFunc, HeatMapColourProvider &colourProvider, HeatMapColourProvider::COLOUR_INTERPOLATION_MODE interpolationMode, double xMin, double xMax, double yMin, double yMax, bool invertColours);
 	wxString generateNewDefaultFilename(wxString outputDir, wxString originalName);
+	bool getDoubleFromEditControl(double &d, int windowId);
+	bool getUlongFromEditControl(unsigned long &i, int windowId);
+	void setEditControlDouble(double d, int windowId);
+	void setEditControlInt(int i, int windowId);
 	void startImageGeneratorThreadController(ImageOptions imageOptions);
 	void onThreadCompletion(wxThreadEvent&);
 	void onThreadUpdate(wxThreadEvent&);
