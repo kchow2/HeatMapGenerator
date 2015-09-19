@@ -11,15 +11,15 @@ double HeatMapFunc_CosXY(double x, double y){
 
 double HeatMapFunc_E_POW_XY(double x, double y){
 	const double e = 2.7178;
-	return pow(e, abs(x*y / 10.0) * -1.0);
+	return pow(e, fabs(x*y / 10.0) * -1.0);
 }
 
 double HeatMapFunc_XY(double x, double y){
-	return abs(x*y) / 10.0;
+	return fabs(x*y) / 10.0;
 }
 
 double HeatMapFunc_1_OVER_XY(double x, double y){
-	return 1.0 / abs(x*y);
+	return 1.0 / fabs(x*y);
 }
 
 double HeatMapFunc_WEIRD_1(double x, double y){
@@ -45,10 +45,10 @@ double HeatMapFunc_DONUT(double x, double y){
 	return 1.0 - (d*d - 0.05)*0.025;
 }
 double HeatMapFunc_X_PLUS_SINXY(double x, double y){
-	return abs(x + sin(x*y)) / 4.0;
+	return fabs(x + sin(x*y)) / 4.0;
 }
 double HeatMapFunc_X2_Y3_COSXY(double x, double y){
-	return abs(x*x + y*y*y - x*y + cos(x*y)) / 40.0;
+	return fabs(x*x + y*y*y - x*y + cos(x*y)) / 40.0;
 }
 double HeatMapFunc_X2_Y2_E_X2_Y2(double x, double y){
 	const double e = 2.7178;
@@ -61,7 +61,7 @@ double HeatMapFunc_SIN_SQRT_X2_Y2(double x, double y){
 	return sin(sqrt(x*x + y*y)) / 2 + 0.5;
 }
 double HeatMapFunc_SIN_1_OVER_XY(double x, double y){
-	if (abs(x*y) < 0.0000001)
+	if (fabs(x*y) < 0.0000001)
 		return 0.5;
 	return sin(1 / (x*y)) / 2 + 0.5;
 }
@@ -73,10 +73,10 @@ double HeatMapFunc_SIN__SIN_COS(double x, double y){
 	return sin(sin(x) + cos(y)) / 2 + 0.5;
 }
 double HeatMapFunc_SIN_X2_Y2(double x, double y){
-	return abs(sin(x*x - y*y));
+	return fabs(sin(x*x - y*y));
 }
 double HeatMapFunc_X_PLUS_Y(double x, double y){
-	return (abs(x) + abs(y)) / 20.0;
+	return (fabs(x) + abs(y)) / 20.0;
 }
 
 double HeatMapFunc_HEART1(double x, double y){
@@ -91,13 +91,20 @@ double HeatMapFunc_HEART2(double x, double y){
 	//double theta = atan2(y, x);
 	double theta_inv = atan2(x, -(y / 2));
 
-	return abs(theta_inv / r);
+	return fabs(theta_inv / r);
 }
 double HeatMapFunc_CHECKERBOARD(double x, double y){
 	//checkerboard
 	double d1, d2;
-	d1 = fmod(abs(x), 2.0) > 1.0 ? 1.0 : 0.0;
-	d2 = fmod(abs(y), 2.0) < 1.0 ? 1.0 : 0.0;
+	if(x >= 0.0)
+		d1 = fabs(fmod(x, 2.0)) > 1.0 ? 1.0 : 0.0;
+	else
+		d1 = fabs(fmod(x, 2.0)) < 1.0 ? 1.0 : 0.0;
+	if(y >= 0.0)
+		d2 = fabs(fmod(y, 2.0)) < 1.0 ? 1.0 : 0.0;	
+	else
+		d2 = fabs(fmod(y, 2.0)) > 1.0 ? 1.0 : 0.0;
+
 	return fmod(d1 + d2, 2.0) > 0.5 ? 1.0 : 0.0;
 }
 
