@@ -45,7 +45,7 @@ ImageOptionsDialog::ImageOptionsDialog(const wxString& title, const wxPoint& pos
 	//This is true once all of the controls have been initialized.
 	this->dialogInitialized = false;
 	
-	#ifdef WINDOWS
+	#ifdef _WIN32
 	//set the main icon
 	this->SetIcon(wxIcon("main_icon"));
 	#endif
@@ -320,10 +320,11 @@ wxString ImageOptionsDialog::generateNewDefaultFilename(wxString outputDir, wxSt
 
 void ImageOptionsDialog::cancelButtonEvent(wxCommandEvent& event){
 	wxCriticalSectionLocker enter(this->imageGeneratorWorkerCS);
-	// the thread is being destroyed; make sure not to leave dangling pointers around
-	if (imageGeneratorThreadController != NULL)
-		this->imageGeneratorThreadController->Delete();
-	//this->Close(false);
+	//cancel the generation of the image
+	if (imageGeneratorThreadController != NULL){
+		this->imageGeneratorThreadController->cancel();
+		this->imageGeneratorThreadController = NULL;
+	}	
 }
 
 //Event handler for zoom buttons. Zooms out by a percent of the current perspective size.

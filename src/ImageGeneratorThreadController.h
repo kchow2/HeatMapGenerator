@@ -16,6 +16,7 @@ public:
 	}
 	bool generateImage();
 	bool generateImageMT(int nThreads);
+	void cancel();
 	bool onProgressUpdate(int workDone, int totalWork);
 	bool onWorkerThreadProgressUpdate(int threadId, int workDone, int totalWork);
 	~ImageGeneratorThreadController();
@@ -30,4 +31,5 @@ public:
 protected:
 	virtual ExitCode Entry();
 	ImageOptionsDialog *handler;
+	bool shouldQuit;
 };

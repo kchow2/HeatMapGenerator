@@ -9,6 +9,7 @@ wxThread::ExitCode ImageGeneratorThreadController::Entry()
 {
 	//wxStopWatch timer;
 	//timer.Start();
+	this->shouldQuit = false;
 	this->generateImageMT(wxThread::GetCPUCount()); //create as many cores as we have CPU cores
 	//timer.Pause();
 	//int timeElapsedMs = (int)timer.Time();
@@ -19,7 +20,7 @@ wxThread::ExitCode ImageGeneratorThreadController::Entry()
 	return (wxThread::ExitCode)0;     // success
 }
 
-bool ImageGeneratorThreadController::generateImage(){
+/*bool ImageGeneratorThreadController::generateImage(){
 	this->wasCancelled = false;
 
 	//generate the image and write to file
@@ -60,7 +61,7 @@ bool ImageGeneratorThreadController::generateImage(){
 		return false;
 	}
 	return true;
-}
+}*/
 
 bool ImageGeneratorThreadController::generateImageMT(int nThreads){
 	this->wasCancelled = false;
@@ -89,6 +90,7 @@ bool ImageGeneratorThreadController::generateImageMT(int nThreads){
 	wxThread *thread = new ImageGeneratorThreadWorker(this, &outputImage, this->imageOptions, (nThreads-1)*rowsPerThread, this->totalRows, 0);
 	thread->Run();
 	threads.push_back(thread);
+	
 	for (unsigned int i = 0; i < threads.size(); i++){
 		threads[i]->Wait();
 	}
@@ -121,12 +123,19 @@ bool ImageGeneratorThreadController::generateImageMT(int nThreads){
 	return true;
 }
 
+void ImageGeneratorThreadController::cancel(){
+	this->wasCancelled = true;
+}
+
 //gets called from ImageGenerator while generating the image
 bool ImageGeneratorThreadController::onProgressUpdate(int workDone, int totalWork){
 	if (this->TestDestroy()){
 		this->wasCancelled = true;
-		return false; 
 	}
+	if (this->wasCancelled){
+		return false;
+	}
+
 	//send a progress update event to the main thread
 	wxThreadEvent *threadEvent = new wxThreadEvent(wxEVT_THREAD, ImageOptionsDialog::ID_THREAD_UPDATE);
 	threadEvent->SetInt(workDone * 100 / totalWork);
@@ -134,10 +143,10 @@ bool ImageGeneratorThreadController::onProgressUpdate(int workDone, int totalWor
 	return true;
 }
 
+
 //gets called from worker threads while generating the image
 bool ImageGeneratorThreadController::onWorkerThreadProgressUpdate(int threadId, int workDone, int totalWork){
-	if (this->TestDestroy()){
-		this->wasCancelled = true;
+	if (this->wasCancelled){
 		return false;
 	}
 
@@ -149,6 +158,7 @@ bool ImageGeneratorThreadController::onWorkerThreadProgressUpdate(int threadId, 
 	wxQueueEvent(this->handler, threadEvent);
 	return true;
 }
+
 
 ImageGeneratorThreadController::~ImageGeneratorThreadController()
 {
