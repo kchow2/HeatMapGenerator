@@ -76,7 +76,7 @@ double HeatMapFunc_SIN_X2_Y2(double x, double y){
 	return fabs(sin(x*x - y*y));
 }
 double HeatMapFunc_X_PLUS_Y(double x, double y){
-	return (fabs(x) + abs(y)) / 20.0;
+	return (fabs(x) + fabs(y)) / 20.0;
 }
 
 double HeatMapFunc_HEART1(double x, double y){
