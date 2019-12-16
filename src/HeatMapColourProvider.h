@@ -62,12 +62,6 @@ public:
 	virtual HeatMapColourProvider::Colour getHeatMapColour(double heatValue);
 };
 
-class PinkColourProvider : public HeatMapColourProvider
-{
-public:
-	virtual HeatMapColourProvider::Colour getHeatMapColour(double heatValue);
-};
-
 class RoygbivColourProvider : public HeatMapColourProvider 
 {
 public:
@@ -146,7 +140,55 @@ public:
 	virtual HeatMapColourProvider::Colour getHeatMapColour(double heatValue);
 };
 
+class RedColourProvider : public HeatMapColourProvider
+{
+public:
+	virtual HeatMapColourProvider::Colour getHeatMapColour(double heatValue);
+};
+
+class BlueColourProvider : public HeatMapColourProvider
+{
+public:
+	virtual HeatMapColourProvider::Colour getHeatMapColour(double heatValue);
+};
+
+class GreenColourProvider : public HeatMapColourProvider
+{
+public:
+	virtual HeatMapColourProvider::Colour getHeatMapColour(double heatValue);
+};
+
+class YellowColourProvider : public HeatMapColourProvider
+{
+public:
+	virtual HeatMapColourProvider::Colour getHeatMapColour(double heatValue);
+};
+
+class PurpleColourProvider : public HeatMapColourProvider
+{
+public:
+	virtual HeatMapColourProvider::Colour getHeatMapColour(double heatValue);
+};
+
+class OrangeColourProvider : public HeatMapColourProvider
+{
+public:
+	virtual HeatMapColourProvider::Colour getHeatMapColour(double heatValue);
+};
+
+class PinkColourProvider : public HeatMapColourProvider
+{
+public:
+	virtual HeatMapColourProvider::Colour getHeatMapColour(double heatValue);
+};
+
 class GoogleColourProvider : public HeatMapColourProvider
+{
+public:
+	virtual HeatMapColourProvider::Colour getHeatMapColour(double heatValue);
+};
+
+class XmasColourProvider : public HeatMapColourProvider
 {
 public:
 	virtual HeatMapColourProvider::Colour getHeatMapColour(double heatValue);

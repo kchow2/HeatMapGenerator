@@ -101,7 +101,15 @@ ImageOptionsDialog::ImageOptionsDialog(const wxString& title, const wxPoint& pos
 	addColourProvider(new FireColourProvider(), wxT("Fire"));
 	addColourProvider(new BlueGoldColourProvider(), wxT("Blue-Gold"));
 	addColourProvider(new PinkGreenColourProvider(), wxT("Pink-Green"));
+	addColourProvider(new RedColourProvider(), wxT("Red"));
+	addColourProvider(new BlueColourProvider(), wxT("Blue"));
+	addColourProvider(new GreenColourProvider(), wxT("Green"));
+	addColourProvider(new YellowColourProvider(), wxT("Yellow"));
+	addColourProvider(new PurpleColourProvider(), wxT("Purple"));
+	addColourProvider(new OrangeColourProvider(), wxT("Orange"));
+	addColourProvider(new PinkColourProvider(), wxT("Pink"));
 	addColourProvider(new GoogleColourProvider(), wxT("Google"));
+	addColourProvider(new XmasColourProvider(), wxT("X-mas"));
 	addColourProvider(new TestColourProvider(), wxT("Test"));
 
 	//initialize images for the preview image and the colour palette preview
@@ -172,9 +180,9 @@ ImageOptionsDialog::ImageOptionsDialog(const wxString& title, const wxPoint& pos
 	outputSettingsLabel = new wxStaticText(this, wxID_ANY, wxT("Output Settings"), wxPoint(15, 320));
 	resolutionLabel = new wxStaticText(this, wxID_ANY, wxT("Resolution"), wxPoint(15, 350));
 	resolutionSeparator = new wxStaticText(this, wxID_ANY, wxT("x"), wxPoint(82, 370));
-	//get the current screen resolution and use that as the default value for the output resolution of the image
-	wxString xResStr = wxString::Format(wxT("%i"), wxSystemSettings::GetMetric(wxSYS_SCREEN_X));
-	wxString yResStr = wxString::Format(wxT("%i"), wxSystemSettings::GetMetric(wxSYS_SCREEN_Y));
+	//get the current screen resolution, multiplied by 2 and use that as the default value for the output resolution of the image
+	wxString xResStr = wxString::Format(wxT("%i"), wxSystemSettings::GetMetric(wxSYS_SCREEN_X)*2);
+	wxString yResStr = wxString::Format(wxT("%i"), wxSystemSettings::GetMetric(wxSYS_SCREEN_Y)*2);
 	xRes = new wxTextCtrl(this, ID_XRES, xResStr, wxPoint(15, 370), wxSize(60, 20), wxTE_PROCESS_ENTER, wxTextValidator(wxFILTER_DIGITS));
 	yRes = new wxTextCtrl(this, ID_YRES, yResStr, wxPoint(95, 370), wxSize(60, 20), wxTE_PROCESS_ENTER, wxTextValidator(wxFILTER_DIGITS));
 

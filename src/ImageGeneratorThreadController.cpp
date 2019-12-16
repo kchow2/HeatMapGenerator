@@ -9,8 +9,10 @@ wxThread::ExitCode ImageGeneratorThreadController::Entry()
 {
 	//wxStopWatch timer;
 	//timer.Start();
+
 	this->shouldQuit = false;
 	this->generateImageMT(wxThread::GetCPUCount()); //create as many cores as we have CPU cores
+
 	//timer.Pause();
 	//int timeElapsedMs = (int)timer.Time();
 	//wxMessageBox(wxString::Format("Generation took %d ms.", timeElapsedMs));
@@ -20,58 +22,16 @@ wxThread::ExitCode ImageGeneratorThreadController::Entry()
 	return (wxThread::ExitCode)0;     // success
 }
 
-/*bool ImageGeneratorThreadController::generateImage(){
-	this->wasCancelled = false;
-
-	//generate the image and write to file
-	ImageGenerator imageGenerator;
-	wxImage outputImage(imageOptions.xRes, imageOptions.yRes);
-	if (!outputImage.IsOk()){
-		wxMessageBox(wxT("Failed to create the image!"));
-		return false;
-	}
-
-	//set the colour function used with the heatmap
-	imageGenerator.setColourProvider(imageOptions.colourProvider, imageOptions.colourInterpolationMode);
-	imageGenerator.setInvertColours(imageOptions.invertColours);
-	imageGenerator.setFunction(imageOptions.heatMapFunc, imageOptions.xMin, imageOptions.xMax, imageOptions.yMin, imageOptions.yMax);
-	imageGenerator.setSSAALevel(imageOptions.ssaaLevel);
-	imageGenerator.setProgressListener(this);
-
-	//generate the final image
-	imageGenerator.generateImage(&outputImage);
-
-	//if the user cancelled, return immediately without saving the file
-	if (this->wasCancelled){
-		return false;
-	}
-
-	//notify the main window we have finished generating the image
-	wxQueueEvent(this->handler, new wxThreadEvent(wxEVT_THREAD, ImageOptionsDialog::ID_THREAD_GENERATION_FINISHED));
-
-	//save the png file
-	wxFileOutputStream outputStream(imageOptions.outputFilename);
-	if (!outputStream.IsOk()){
-		wxLogError("Cannot open file '%s'.", imageOptions.outputFilename);
-		return false;
-	}
-	bool res = outputImage.SaveFile(outputStream, wxBITMAP_TYPE_PNG);
-	if (!res){
-		wxMessageBox(wxT("There was a problem saving the image."), wxT("Error"), wxICON_ERROR);
-		return false;
-	}
-	return true;
-}*/
-
 bool ImageGeneratorThreadController::generateImageMT(int nThreads){
-	this->wasCancelled = false;
-
+	
 	//generate the image and write to file
 	wxImage outputImage(imageOptions.xRes, imageOptions.yRes);
 	if (!outputImage.IsOk()){
 		wxMessageBox(wxT("Failed to create the image!"));
 		return false;
 	}
+
+	this->wasCancelled = false;
 
 	//set up progress updating for the threads
 	this->rowsGenerated = 0;

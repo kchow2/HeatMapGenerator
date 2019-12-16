@@ -15,6 +15,11 @@ struct ImageOptions{
 	bool invertColours;
 };
 
+struct ImageGenResult {
+	wxImage *image;
+	bool success;
+};
+
 class ImageGeneratorProgressListener{
 public:
 	virtual bool onProgressUpdate(int workDone, int totalWork) = 0;

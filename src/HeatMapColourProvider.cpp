@@ -2,6 +2,8 @@
 #include <math.h>
 #include <algorithm>
 
+#define SIZEOF(a) sizeof(a)/sizeof(a[0])
+
 void HeatMapColourProvider::setInterpolationMode(COLOUR_INTERPOLATION_MODE mode){
 	this->interpolationMode = mode;
 }
@@ -66,58 +68,42 @@ HeatMapColourProvider::Colour HeatMapColourProvider::getHeatMapColour(double hea
 	//0.0-1.0    black-blue-cyan-green-yellow-red-white
 	heatValue = std::max(0.0, std::min(heatValue,1.0));	//clamp intensity to range [0.0, 1.0]
 	
-	const int nColours = 7;
 	const int rValues[] = { 0x00, 0x00, 0x00, 0x00, 0xFF, 0xFF, 0xFF };
 	const int gValues[] = { 0x00, 0x00, 0xFF, 0xFF, 0xFF, 0x00, 0xFF };
 	const int bValues[] = { 0x00, 0xFF, 0xFF, 0x00, 0x00, 0x00, 0xFF };
 
-	return this->getInterpolatedColourValue(heatValue, rValues, gValues, bValues, nColours);
+	return this->getInterpolatedColourValue(heatValue, rValues, gValues, bValues, SIZEOF(rValues));
 }
 
 //colour ranges from black at 0.0 to white at 1.0
 HeatMapColourProvider::Colour GrayscaleColourProvider::getHeatMapColour(double heatValue){
 	heatValue = std::max(0.0, std::min(heatValue, 1.0));	//clamp intensity to range [0.0, 1.0]
 	
-	const int nColours = 2;
 	const int rValues[] = { 0x00, 0xFF };
 	const int gValues[] = { 0x00, 0xFF };
 	const int bValues[] = { 0x00, 0xFF };
 
-	return this->getInterpolatedColourValue(heatValue, rValues, gValues, bValues, nColours);
-}
-
-//colour ranges from white at 0.0 to pink at 1.0
-HeatMapColourProvider::Colour PinkColourProvider::getHeatMapColour(double heatValue){
-	heatValue = std::max(0.0, std::min(heatValue, 1.0));	//clamp intensity to range [0.0, 1.0]
-	
-	const int nColours = 2;
-	const int rValues[] = { 0xFF, 0xFF };
-	const int gValues[] = { 0xFF, 0x00 };
-	const int bValues[] = { 0xFF, 0xFF };
-
-	return this->getInterpolatedColourValue(heatValue, rValues, gValues, bValues, nColours);
+	return this->getInterpolatedColourValue(heatValue, rValues, gValues, bValues, SIZEOF(rValues));
 }
 
 HeatMapColourProvider::Colour RoygbivColourProvider::getHeatMapColour(double heatValue){
 	//0.0-1.0    black-red-orange-yellow-green-cyan-blue-indigo-violet
 	heatValue = std::max(0.0, std::min(heatValue, 1.0));	//clamp intensity to range [0.0, 1.0]
-	const int nColours = 7;
 	const int rValues[] = { 0xFF, 0xFF, 0xFF, 0x00, 0x00, 0x00, 0x9F };
 	const int gValues[] = { 0x00, 0x66, 0xFF, 0xFF, 0xFF, 0x00, 0x00 };
 	const int bValues[] = { 0x00, 0x00, 0x00, 0x00, 0xFF, 0xFF, 0xFF };
 
-	return this->getInterpolatedColourValue(heatValue, rValues, gValues, bValues, nColours);
+	return this->getInterpolatedColourValue(heatValue, rValues, gValues, bValues, SIZEOF(rValues));
 }
 
 HeatMapColourProvider::Colour RoygbivBWColourProvider::getHeatMapColour(double heatValue){
 	//0.0-1.0    black-red-orange-yellow-green-cyan-blue-indigo-violet
 	heatValue = std::max(0.0, std::min(heatValue, 1.0));	//clamp intensity to range [0.0, 1.0]
-	const int nColours = 9;
 	const int rValues[] = { 0x00, 0xFF, 0xFF, 0xFF, 0x00, 0x00, 0x00, 0x9F, 0xFF };
 	const int gValues[] = { 0x00, 0x00, 0x66, 0xFF, 0xFF, 0xFF, 0x00, 0x00, 0xFF };
 	const int bValues[] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0xFF, 0xFF, 0xFF, 0xFF };
 
-	return this->getInterpolatedColourValue(heatValue, rValues, gValues, bValues, nColours);
+	return this->getInterpolatedColourValue(heatValue, rValues, gValues, bValues, SIZEOF(rValues));
 }
 
 
@@ -125,12 +111,11 @@ HeatMapColourProvider::Colour GreenRedColourProvider::getHeatMapColour(double he
 	//0.0-1.0    green-yellow-red
 	heatValue = std::max(0.0, std::min(heatValue, 1.0));	//clamp intensity to range [0.0, 1.0]
 
-	const int nColours = 3;
 	const int rValues[] = { 0x00, 0xFF, 0xFF };
 	const int gValues[] = { 0xFF, 0xFF, 0x00 };
 	const int bValues[] = { 0x00, 0x00, 0x00 };
 
-	return this->getInterpolatedColourValue(heatValue, rValues, gValues, bValues, nColours);
+	return this->getInterpolatedColourValue(heatValue, rValues, gValues, bValues, SIZEOF(rValues));
 }
 
 /* Taken from http://www.vendian.org/mncharity/dir3/blackbody/
@@ -159,12 +144,11 @@ Temperature    x      y      z       R     G     B
 HeatMapColourProvider::Colour BlackBodyColourProvider::getHeatMapColour(double heatValue){
 	heatValue = std::max(0.0, std::min(heatValue, 1.0));	//clamp intensity to range [0.0, 1.0]
 
-	const int nColours = 19;
 	const int rValues[] = { 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xE7, 0xD2, 0xC2, 0xB5, 0xAA, 0xA1, 0x99 };
 	const int gValues[] = { 0x01, 0x20, 0x3B, 0x58, 0x73, 0x8B, 0xA1, 0xB5, 0xC6, 0xD5, 0xE2, 0xEE, 0xE2, 0xD5, 0xCC, 0xC3, 0xBC, 0xB6, 0xB0 };
 	const int bValues[] = { 0x00, 0x00, 0x02, 0x11, 0x26, 0x40, 0x5E, 0x7D, 0x9E, 0xBE, 0xDD, 0xFB, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF };
 
-	return this->getInterpolatedColourValue(heatValue, rValues, gValues, bValues, nColours);
+	return this->getInterpolatedColourValue(heatValue, rValues, gValues, bValues, SIZEOF(rValues));
 }
 
 HeatMapColourProvider::Colour IslandParadiseColourProvider::getHeatMapColour(double heatValue){
@@ -175,12 +159,11 @@ HeatMapColourProvider::Colour IslandParadiseColourProvider::getHeatMapColour(dou
 	//89D537
 	//F8D68E
 	//D3F0FF
-	const int nColours = 5;
 	const int rValues[] = { 0x23, 0x0C, 0x89, 0xF8, 0xD3 };
 	const int gValues[] = { 0xBA, 0x73, 0xD5, 0xD6, 0xF0 };
 	const int bValues[] = { 0xD7, 0xDC, 0x37, 0x8E, 0xFF };
 
-	return this->getInterpolatedColourValue(heatValue, rValues, gValues, bValues, nColours);
+	return this->getInterpolatedColourValue(heatValue, rValues, gValues, bValues, SIZEOF(rValues));
 }
 
 HeatMapColourProvider::Colour OceanColourProvider::getHeatMapColour(double heatValue){
@@ -190,12 +173,11 @@ HeatMapColourProvider::Colour OceanColourProvider::getHeatMapColour(double heatV
 	//B1F0D2
 	//619E79
 	//003F34
-	const int nColours = 5;
 	const int rValues[] = { 0x13, 0x61, 0xB1, 0x61, 0x00 };
 	const int gValues[] = { 0x1C, 0x85, 0xF0, 0x9E, 0x3F };
 	const int bValues[] = { 0x45, 0x8E, 0xD2, 0x79, 0x34 };
 
-	return this->getInterpolatedColourValue(heatValue, rValues, gValues, bValues, nColours);
+	return this->getInterpolatedColourValue(heatValue, rValues, gValues, bValues, SIZEOF(rValues));
 }
 
 HeatMapColourProvider::Colour FBColourProvider::getHeatMapColour(double heatValue){
@@ -206,12 +188,11 @@ HeatMapColourProvider::Colour FBColourProvider::getHeatMapColour(double heatValu
 	//dfe3ee
 	//f7f7f7
 	//ffffff
-	const int nColours = 5;
 	const int rValues[] = { 0x3B, 0x8B, 0xDF, 0xF7, 0xFF };
 	const int gValues[] = { 0x59, 0x9D, 0xE3, 0xF7, 0xFF };
 	const int bValues[] = { 0x98, 0xC3, 0xEE, 0xF7, 0xFF };
 
-	return this->getInterpolatedColourValue(heatValue, rValues, gValues, bValues, nColours);
+	return this->getInterpolatedColourValue(heatValue, rValues, gValues, bValues, SIZEOF(rValues));
 }
 
 HeatMapColourProvider::Colour GryffindorColourProvider::getHeatMapColour(double heatValue){
@@ -222,12 +203,11 @@ HeatMapColourProvider::Colour GryffindorColourProvider::getHeatMapColour(double 
 	//eeba30
 	//d3a625
 	//000000
-	const int nColours = 5;
 	const int rValues[] = { 0x74, 0xAE, 0xEE, 0xD3, 0x00 };
 	const int gValues[] = { 0x00, 0x00, 0xBA, 0xA6, 0x00 };
 	const int bValues[] = { 0x00, 0x00, 0x30, 0x25, 0x00 };
 
-	return this->getInterpolatedColourValue(heatValue, rValues, gValues, bValues, nColours);
+	return this->getInterpolatedColourValue(heatValue, rValues, gValues, bValues, SIZEOF(rValues));
 }
 
 HeatMapColourProvider::Colour CedarColourProvider::getHeatMapColour(double heatValue){
@@ -237,12 +217,11 @@ HeatMapColourProvider::Colour CedarColourProvider::getHeatMapColour(double heatV
 	//2a334f
 	//6b4423
 	//ac8f57
-	const int nColours = 5;
 	const int rValues[] = { 0xCC, 0xE5, 0x2A, 0x6B, 0xAC };
 	const int gValues[] = { 0x16, 0xCE, 0x33, 0x44, 0x8F };
 	const int bValues[] = { 0x14, 0xB0, 0x4F, 0x23, 0x57 };
 
-	return this->getInterpolatedColourValue(heatValue, rValues, gValues, bValues, nColours);
+	return this->getInterpolatedColourValue(heatValue, rValues, gValues, bValues, SIZEOF(rValues));
 }
 
 HeatMapColourProvider::Colour PokeballColourProvider::getHeatMapColour(double heatValue){
@@ -250,12 +229,11 @@ HeatMapColourProvider::Colour PokeballColourProvider::getHeatMapColour(double he
 	//ee1515
 	//222224
 	//f0f0f0
-	const int nColours = 3;
 	const int rValues[] = { 0xEE, 0x22, 0xF0 };
 	const int gValues[] = { 0x15, 0x22, 0xF0 };
 	const int bValues[] = { 0x15, 0x24, 0xF0 };
 
-	return this->getInterpolatedColourValue(heatValue, rValues, gValues, bValues, nColours);
+	return this->getInterpolatedColourValue(heatValue, rValues, gValues, bValues, SIZEOF(rValues));
 }
 
 HeatMapColourProvider::Colour FireColourProvider::getHeatMapColour(double heatValue){
@@ -265,12 +243,11 @@ HeatMapColourProvider::Colour FireColourProvider::getHeatMapColour(double heatVa
 	//f27d0c
 	//800909
 	//000000
-	const int nColours = 5;
 	const int rValues[] = { 0xFD, 0x75, 0xF2, 0x80, 0x00 };
 	const int gValues[] = { 0xCF, 0x76, 0x7D, 0x09, 0x00 };
 	const int bValues[] = { 0x58, 0x76, 0x0C, 0x09, 0x00 };
 
-	return this->getInterpolatedColourValue(heatValue, rValues, gValues, bValues, nColours);
+	return this->getInterpolatedColourValue(heatValue, rValues, gValues, bValues, SIZEOF(rValues));
 }
 
 HeatMapColourProvider::Colour BlueGoldColourProvider::getHeatMapColour(double heatValue){
@@ -280,17 +257,15 @@ HeatMapColourProvider::Colour BlueGoldColourProvider::getHeatMapColour(double he
 	//FFBA00
 	//0029B2
 	//003BFF
-	const int nColours = 5;
 	const int rValues[] = { 0xB2, 0xFF, 0xFF, 0x00, 0x00 };
 	const int gValues[] = { 0x82, 0xC1, 0xBA, 0x29, 0x3B };
 	const int bValues[] = { 0x00, 0x19, 0x00, 0xB2, 0xFF };
 
-	return this->getInterpolatedColourValue(heatValue, rValues, gValues, bValues, nColours);
+	return this->getInterpolatedColourValue(heatValue, rValues, gValues, bValues, SIZEOF(rValues));
 }
 
 HeatMapColourProvider::Colour PinkGreenColourProvider::getHeatMapColour(double heatValue){
 	heatValue = std::max(0.0, std::min(heatValue, 1.0));	//clamp intensity to range [0.0, 1.0]
-	const int nColours = 4;
 	//E90084
 	//FF0000
 	//00E900
@@ -299,23 +274,110 @@ HeatMapColourProvider::Colour PinkGreenColourProvider::getHeatMapColour(double h
 	const int gValues[] = { 0x00, 0x00, 0xE9, 0xFF };
 	const int bValues[] = { 0x84, 0x00, 0x00, 0x00 };
 
-	return this->getInterpolatedColourValue(heatValue, rValues, gValues, bValues, nColours);
+	return this->getInterpolatedColourValue(heatValue, rValues, gValues, bValues, SIZEOF(rValues));
+}
+
+HeatMapColourProvider::Colour RedColourProvider::getHeatMapColour(double heatValue){
+	heatValue = std::max(0.0, std::min(heatValue, 1.0));	//clamp intensity to range [0.0, 1.0]
+	//000000
+	//FF0000
+	const int rValues[] = { 0x00, 0xFF };
+	const int gValues[] = { 0x00, 0x00 };
+	const int bValues[] = { 0x00, 0x00 };
+
+	return this->getInterpolatedColourValue(heatValue, rValues, gValues, bValues, SIZEOF(rValues));
+}
+
+HeatMapColourProvider::Colour BlueColourProvider::getHeatMapColour(double heatValue){
+	heatValue = std::max(0.0, std::min(heatValue, 1.0));	//clamp intensity to range [0.0, 1.0]
+	//000000
+	//FF0000
+	const int rValues[] = { 0x00, 0x00 };
+	const int gValues[] = { 0x00, 0x00 };
+	const int bValues[] = { 0x00, 0xFF };
+
+	return this->getInterpolatedColourValue(heatValue, rValues, gValues, bValues, SIZEOF(rValues));
+}
+
+HeatMapColourProvider::Colour GreenColourProvider::getHeatMapColour(double heatValue){
+	heatValue = std::max(0.0, std::min(heatValue, 1.0));	//clamp intensity to range [0.0, 1.0]
+	//000000
+	//FF0000
+	const int rValues[] = { 0x00, 0x00 };
+	const int gValues[] = { 0x00, 0xFF };
+	const int bValues[] = { 0x00, 0x00 };
+
+	return this->getInterpolatedColourValue(heatValue, rValues, gValues, bValues, SIZEOF(rValues));
+}
+
+HeatMapColourProvider::Colour YellowColourProvider::getHeatMapColour(double heatValue){
+	heatValue = std::max(0.0, std::min(heatValue, 1.0));	//clamp intensity to range [0.0, 1.0]
+	//000000
+	//FFFF00
+	const int rValues[] = { 0x00, 0xFF };
+	const int gValues[] = { 0x00, 0xFF };
+	const int bValues[] = { 0x00, 0x00 };
+
+	return this->getInterpolatedColourValue(heatValue, rValues, gValues, bValues, SIZEOF(rValues));
+}
+
+HeatMapColourProvider::Colour PurpleColourProvider::getHeatMapColour(double heatValue){
+	heatValue = std::max(0.0, std::min(heatValue, 1.0));	//clamp intensity to range [0.0, 1.0]
+	//000000
+	//8020A0
+	//B090FF
+	const int rValues[] = { 0x00, 0x80, 0xB0 };
+	const int gValues[] = { 0x00, 0x20, 0x90 };
+	const int bValues[] = { 0x00, 0xA0, 0xFF };
+
+	return this->getInterpolatedColourValue(heatValue, rValues, gValues, bValues, SIZEOF(rValues));
+}
+
+HeatMapColourProvider::Colour OrangeColourProvider::getHeatMapColour(double heatValue){
+	heatValue = std::max(0.0, std::min(heatValue, 1.0));	//clamp intensity to range [0.0, 1.0]
+	//000000
+	//A06020
+	//FF9030
+	const int rValues[] = { 0x00, 0xA0, 0xFF };
+	const int gValues[] = { 0x00, 0x60, 0x90 };
+	const int bValues[] = { 0x00, 0x20, 0x30 };
+
+	return this->getInterpolatedColourValue(heatValue, rValues, gValues, bValues, SIZEOF(rValues));
+}
+
+HeatMapColourProvider::Colour PinkColourProvider::getHeatMapColour(double heatValue){
+	heatValue = std::max(0.0, std::min(heatValue, 1.0));	//clamp intensity to range [0.0, 1.0]
+	//000000
+	//FF00FF
+	const int rValues[] = { 0x00, 0xFF };
+	const int gValues[] = { 0x00, 0x00 };
+	const int bValues[] = { 0x00, 0xFF };
+
+	return this->getInterpolatedColourValue(heatValue, rValues, gValues, bValues, SIZEOF(rValues));
 }
 
 HeatMapColourProvider::Colour GoogleColourProvider::getHeatMapColour(double heatValue){
 	//blue-green-yellow-red
 	heatValue = std::max(0.0, std::min(heatValue, 1.0));	//clamp intensity to range [0.0, 1.0]
-	const int nColours = 4;
 	const int rValues[] = { 0x00, 0x00, 0xFF, 0xFF };
 	const int gValues[] = { 0x00, 0xFF, 0xFF, 0x00 };
 	const int bValues[] = { 0xFF, 0x00, 0x00, 0x00 };
 
-	return this->getInterpolatedColourValue(heatValue, rValues, gValues, bValues, nColours);
+	return this->getInterpolatedColourValue(heatValue, rValues, gValues, bValues, SIZEOF(rValues));
+}
+
+HeatMapColourProvider::Colour XmasColourProvider::getHeatMapColour(double heatValue){
+	//black-green-white-red
+	heatValue = std::max(0.0, std::min(heatValue, 1.0));	//clamp intensity to range [0.0, 1.0]
+	const int rValues[] = { 0x00, 0x00, 0xC0, 0xC0 };
+	const int gValues[] = { 0x00, 0x69, 0xC0, 0x00 };
+	const int bValues[] = { 0x00, 0x15, 0xC0, 0x00 };
+
+	return this->getInterpolatedColourValue(heatValue, rValues, gValues, bValues, SIZEOF(rValues));
 }
 
 HeatMapColourProvider::Colour TestColourProvider::getHeatMapColour(double heatValue){
 	heatValue = std::max(0.0, std::min(heatValue, 1.0));	//clamp intensity to range [0.0, 1.0]
-	const int nColours = 4;
 	//E90084
 	//FF0000
 	//00E900
@@ -324,5 +386,5 @@ HeatMapColourProvider::Colour TestColourProvider::getHeatMapColour(double heatVa
 	const int gValues[] = { 0x00, 0x00, 0xE9, 0xFF };
 	const int bValues[] = { 0x84, 0x00, 0x00, 0x00 };
 
-	return this->getInterpolatedColourValue(heatValue, rValues, gValues, bValues, nColours);
+	return this->getInterpolatedColourValue(heatValue, rValues, gValues, bValues, SIZEOF(rValues));
 }
